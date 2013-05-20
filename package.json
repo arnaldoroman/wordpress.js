@@ -12,6 +12,9 @@
   },
   "author": "Sydney Stockholm <opensource@sydneystockholm.com>",
   "license": "MIT",
+  "engines": {
+    "node": ">= 0.10.0"
+  },
   "dependencies": {
     "mariasql": "*"
   },
