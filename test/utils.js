@@ -17,6 +17,14 @@ describe('lib/utils.js', function () {
         assert.equal(str, 'SELECT * FROM foo');
     });
 
+    it('should fail on invalid multiline strings', function () {
+        assert.throws(function () {
+            utils.multiline(function () {
+                /* SELECT * FROM foo */
+            });
+        });
+    });
+
     it('should copy objects', function () {
         var original = { a: 'b' };
         var copy = utils.copy(original, { 'c': 'd' });
@@ -25,3 +33,4 @@ describe('lib/utils.js', function () {
     });
 
 });
+
