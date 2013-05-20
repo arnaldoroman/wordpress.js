@@ -1,0 +1,21 @@
+{
+  "name": "wordpress.js",
+  "version": "0.1.0",
+  "description": "",
+  "main": "lib/wordpress.js",
+  "scripts": {
+    "test": "make check"
+  },
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/SydneyStockholm/wordpress.js"
+  },
+  "author": "Sydney Stockholm <opensource@sydneystockholm.com>",
+  "license": "MIT",
+  "dependencies": {
+    "mariasql": "*"
+  },
+  "devDependencies": {
+    "mocha": "*"
+  }
+}
