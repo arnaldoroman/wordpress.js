@@ -178,8 +178,13 @@ describe('Wordpress', function () {
                     });
                     var post = posts[0];
                     assert.equal(post.id, '1');
-                    assert.equal(post.name, 'bacon-ipsum');
+                    assert.equal(post.slug, '/2011/11/bacon-ipsum');
                     assert.equal(post.title, 'Bacon ipsum');
+                    assert.equal(post.image, '/foo/files/2011/01/2.jpg');
+                    post = posts[1];
+                    assert.equal(post.id, '2');
+                    assert.equal(post.slug, '/2009/08/ham-andouille-speck');
+                    assert.equal(post.title, 'Ham andouille speck');
                     assert.equal(post.image, '/foo/files/2011/01/2.jpg');
                     done();
                 });
@@ -209,7 +214,7 @@ describe('Wordpress', function () {
                     if (err) return done(err);
                     assert.equal(typeof post, 'object');
                     assert.equal(post.id, '1');
-                    assert.equal(post.name, 'bacon-ipsum');
+                    assert.equal(post.slug, '/2011/11/bacon-ipsum');
                     done();
                 });
             });
@@ -222,7 +227,7 @@ describe('Wordpress', function () {
                     if (err) return done(err);
                     assert.equal(typeof post, 'object');
                     assert.equal(post.id, '1');
-                    assert.equal(post.name, 'bacon-ipsum');
+                    assert.equal(post.slug, '/2011/11/bacon-ipsum');
                     assert.equal(post.meta_orientation, 'top');
                     done();
                 });
