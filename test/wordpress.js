@@ -163,6 +163,23 @@ describe('Wordpress', function () {
             });
         });
 
+        it('should load posts', function (done) {
+            getBlog('foo', function (err, foo) {
+                if (err) return done(err);
+                foo.loadPosts(function (err, posts) {
+                    if (err) return done(err);
+                    assert(Array.isArray(posts));
+                    assert.equal(posts.length, 3);
+                    posts.forEach(function (post) {
+                        assert(post instanceof wordpress.Post);
+                        assert(post.date instanceof Date);
+                        assert(post.modified instanceof Date);
+                    });
+                    done();
+                });
+            });
+        });
+
     });
 
 });
