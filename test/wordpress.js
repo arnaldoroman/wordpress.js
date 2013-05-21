@@ -175,6 +175,11 @@ describe('Wordpress', function () {
                         assert(post.date instanceof Date);
                         assert(post.modified instanceof Date);
                     });
+                    var post = posts[0];
+                    assert.equal(post.id, '1');
+                    assert.equal(post.name, 'bacon-ipsum');
+                    assert.equal(post.title, 'Bacon ipsum');
+                    assert.equal(post.image, '/foo/files/2011/01/2.jpg');
                     done();
                 });
             });
