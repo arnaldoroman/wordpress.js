@@ -174,12 +174,29 @@ describe('Wordpress', function () {
                         assert(post instanceof wordpress.Post);
                         assert(post.date instanceof Date);
                         assert(post.modified instanceof Date);
+                        assert.equal(Object.keys(post).length, 8);
                     });
                     var post = posts[0];
                     assert.equal(post.id, '1');
                     assert.equal(post.name, 'bacon-ipsum');
                     assert.equal(post.title, 'Bacon ipsum');
                     assert.equal(post.image, '/foo/files/2011/01/2.jpg');
+                    done();
+                });
+            });
+        });
+
+        it('should load post metadata when keys are specified', function (done) {
+            getBlog('foo', function (err, foo) {
+                if (err) return done(err);
+                foo.loadPosts({ meta_keys: [ 'orientation', 'original_title' ] }, function (err, posts) {
+                    if (err) return done(err);
+                    assert(Array.isArray(posts));
+                    assert.equal(posts.length, 3);
+                    var post = posts[0];
+                    assert.equal(post.id, '1');
+                    assert.equal(post.meta_orientation, 'top');
+                    assert.equal(post.meta_original_title, post.title);
                     done();
                 });
             });
