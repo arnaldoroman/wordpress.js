@@ -26,10 +26,9 @@ function importFixtures(db, callback) {
     });
 }
 
-var db_config = require('../test_config.js');
-db_config.multiStatements = true;
+var config = require('../test_config.js');
 
-var db = new wordpress.MySQL(db_config);
+var db = new wordpress.MySQL(config);
 
 describe('Wordpress', function () {
 
@@ -59,7 +58,7 @@ describe('Wordpress', function () {
         });
 
         it('should accept and use a database name', function (done) {
-            var multisite = new wordpress.Multisite(db, { database: db_config.db });
+            var multisite = new wordpress.Multisite(db, { database: config.db });
             multisite.getBlogs(function (err, blogs) {
                 if (err) return done(err);
                 assert(Array.isArray(blogs));
