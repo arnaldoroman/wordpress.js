@@ -135,6 +135,23 @@ describe('Wordpress', function () {
             });
         });
 
+        it('should load post to term relationships', function (done) {
+            var multisite = new wordpress.Multisite(db);
+            multisite.getBlogs(function (err, blogs) {
+                if (err) return done(err);
+                var foo = blogs[0];
+                foo.loadTermRelationships(function (err, relationships) {
+                    if (err) return done(err);
+                    assert.deepEqual(relationships, {
+                        '1': [ '2', '3', '4' ]
+                      , '2': [ '3', '6', '7', '8' ]
+                      , '3': [ '7', '10', '11' ]
+                    });
+                    done();
+                });
+            });
+        });
+
     });
 
 });
