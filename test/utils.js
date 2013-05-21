@@ -3,7 +3,7 @@ var assert = require('assert')
 
 /*jshint -W015 */
 
-describe('lib/utils.js', function () {
+describe('Utilities', function () {
 
     it('should create multiline strings', function () {
         var str = utils.multiline(function () {/*
