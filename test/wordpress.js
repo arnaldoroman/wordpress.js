@@ -176,12 +176,13 @@ describe('Wordpress', function () {
                         assert(post.modified instanceof Date);
                         assert.equal(Object.keys(post).length, 8);
                     });
+                    assert(posts[0].date > posts[1].date && posts[1].date > posts[2].date);
                     var post = posts[0];
                     assert.equal(post.id, '1');
                     assert.equal(post.slug, '/2011/11/bacon-ipsum');
                     assert.equal(post.title, 'Bacon ipsum');
                     assert.equal(post.image, '/foo/files/2011/01/2.jpg');
-                    post = posts[1];
+                    post = posts[2];
                     assert.equal(post.id, '2');
                     assert.equal(post.slug, '/2009/08/ham-andouille-speck');
                     assert.equal(post.title, 'Ham andouille speck');
