@@ -202,6 +202,44 @@ describe('Wordpress', function () {
             });
         });
 
+        it('should load a post by ID', function (done) {
+            getBlog('foo', function (err, foo) {
+                if (err) return done(err);
+                foo.loadPost(1, function (err, post) {
+                    if (err) return done(err);
+                    assert.equal(typeof post, 'object');
+                    assert.equal(post.id, '1');
+                    assert.equal(post.name, 'bacon-ipsum');
+                    done();
+                });
+            });
+        });
+
+        it('should load a post by ID with metadata', function (done) {
+            getBlog('foo', function (err, foo) {
+                if (err) return done(err);
+                foo.loadPost(1, { meta_keys: [ 'orientation' ] }, function (err, post) {
+                    if (err) return done(err);
+                    assert.equal(typeof post, 'object');
+                    assert.equal(post.id, '1');
+                    assert.equal(post.name, 'bacon-ipsum');
+                    assert.equal(post.meta_orientation, 'top');
+                    done();
+                });
+            });
+        });
+
+        it('should return null when a post doesn\'t exist', function (done) {
+            getBlog('foo', function (err, foo) {
+                if (err) return done(err);
+                foo.loadPost(9999, function (err, post) {
+                    if (err) return done(err);
+                    assert.equal(post, null);
+                    done();
+                });
+            });
+        });
+
     });
 
 });
