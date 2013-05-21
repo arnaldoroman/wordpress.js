@@ -1,7 +1,5 @@
-var lib_dir = process.env.JS_COV ? '../lib-cov/': '../lib/';
-
 var assert = require('assert')
-  , utils = require(lib_dir + 'utils');
+  , utils = require('../lib/utils');
 
 /*jshint -W015 */
 
