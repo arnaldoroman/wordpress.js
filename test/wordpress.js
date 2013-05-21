@@ -4,7 +4,7 @@ var assert = require('assert')
   , wordpress = require(lib_dir + 'wordpress')
   , fs = require('fs');
 
-var fixtures = null;
+var fixtures = null, cache = {};
 
 function loadFixtures(callback) {
     if (fixtures !== null) {
@@ -24,6 +24,22 @@ function importFixtures(db, callback) {
     });
 }
 
+function getBlog(name, callback) {
+    if (name in cache) {
+        return callback(null, cache[name]);
+    }
+    var multisite = new wordpress.Multisite(db);
+    multisite.getBlogs(function (err, blogs) {
+        if (err) return callback(err);
+        for (var i = 0; i < blogs.length; i++) {
+            if (blogs[i].name === name) {
+                cache[name] = blogs[i];
+                return callback(null, blogs[i]);
+            }
+        }
+    });
+}
+
 var config = require('../test_config.js');
 
 var db = new wordpress.MySQL(config);
@@ -33,7 +49,10 @@ describe('Wordpress', function () {
     before(function (callback) {
         db.connect(function (err) {
             if (err) return callback(err);
-            importFixtures(db, callback);
+            importFixtures(db, function (err) {
+                if (err) return callback(err);
+                getBlog('foo', callback);
+            });
         });
     });
 
@@ -72,10 +91,8 @@ describe('Wordpress', function () {
     describe('Blog', function () {
 
         it('should load metadata', function (done) {
-            var multisite = new wordpress.Multisite(db);
-            multisite.getBlogs(function (err, blogs) {
+            getBlog('foo', function (err, foo) {
                 if (err) return done(err);
-                var foo = blogs[0];
                 foo.loadMetadata(function (err, metadata) {
                     if (err) return done(err);
                     assert.equal(typeof metadata, 'object');
@@ -87,10 +104,8 @@ describe('Wordpress', function () {
         });
 
         it('should load metadata using a mask', function (done) {
-            var multisite = new wordpress.Multisite(db);
-            multisite.getBlogs(function (err, blogs) {
+            getBlog('foo', function (err, foo) {
                 if (err) return done(err);
-                var foo = blogs[0];
                 foo.loadMetadata([ 'twitter' ], function (err, metadata) {
                     if (err) return done(err);
                     assert.equal(typeof metadata, 'object');
@@ -102,10 +117,8 @@ describe('Wordpress', function () {
         });
 
         it('should load categories and tags', function (done) {
-            var multisite = new wordpress.Multisite(db);
-            multisite.getBlogs(function (err, blogs) {
+            getBlog('foo', function (err, foo) {
                 if (err) return done(err);
-                var foo = blogs[0];
                 foo.loadTerms(function (err, terms) {
                     if (err) return done(err);
                     assert(typeof terms, 'object');
@@ -136,10 +149,8 @@ describe('Wordpress', function () {
         });
 
         it('should load post to term relationships', function (done) {
-            var multisite = new wordpress.Multisite(db);
-            multisite.getBlogs(function (err, blogs) {
+            getBlog('foo', function (err, foo) {
                 if (err) return done(err);
-                var foo = blogs[0];
                 foo.loadTermRelationships(function (err, relationships) {
                     if (err) return done(err);
                     assert.deepEqual(relationships, {
