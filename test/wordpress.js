@@ -106,7 +106,7 @@ describe('Wordpress', function () {
         it('should load metadata using a mask', function (done) {
             getBlog('foo', function (err, foo) {
                 if (err) return done(err);
-                foo.loadMetadata([ 'twitter' ], function (err, metadata) {
+                foo.loadMetadata({ keys: [ 'twitter' ] }, function (err, metadata) {
                     if (err) return done(err);
                     assert.equal(typeof metadata, 'object');
                     assert.equal(metadata.twitter, 'bacon');
