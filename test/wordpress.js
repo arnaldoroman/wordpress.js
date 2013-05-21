@@ -103,6 +103,40 @@ describe('Wordpress', function () {
             });
         });
 
+        it('should load categories and tags', function (done) {
+            var multisite = new wordpress.Multisite(db);
+            multisite.getBlogs(function (err, blogs) {
+                if (err) return done(err);
+                var foo = blogs[0];
+                foo.loadTerms(function (err, terms) {
+                    if (err) return done(err);
+                    assert(typeof terms, 'object');
+                    assert(Object.keys(terms).length, 11);
+                    assert(terms['3'] instanceof wordpress.Category);
+                    assert(terms['7'] instanceof wordpress.Tag);
+                    var tag = terms['7']
+                      , category = terms['3']
+                      , subcategory = terms['100']
+                      , subsubcategory = terms['101'];
+                    assert.equal(tag.name, 'Awesome');
+                    assert.equal(tag.slug, 'awesome');
+                    assert.equal(category.name, 'Shopping');
+                    assert.equal(category.slug, 'shopping');
+                    assert.equal(category.parent, null);
+                    assert(Array.isArray(category.children));
+                    assert.equal(category.children[0], subcategory);
+                    assert.equal(subcategory.name, 'Subcategory');
+                    assert.equal(subcategory.parent, category);
+                    assert(Array.isArray(subcategory.children));
+                    assert.equal(subcategory.children[0], subsubcategory);
+                    assert.equal(subsubcategory.name, 'Subsubcategory');
+                    assert.equal(subsubcategory.parent, subcategory);
+                    assert.equal(subsubcategory.children, null);
+                    done();
+                });
+            });
+        });
+
     });
 
 });
