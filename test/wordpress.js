@@ -1,7 +1,6 @@
 var assert = require('assert')
   , wordpress = require('../lib/wordpress')
-  , fs = require('fs')
-  , zlib = require('zlib');
+  , fs = require('fs');
 
 var fixtures = null;
 
@@ -9,13 +8,10 @@ function loadFixtures(callback) {
     if (fixtures !== null) {
         return callback(null, fixtures);
     }
-    fs.readFile(__dirname + '/fixtures.sql.gz', function (err, gz) {
+    fs.readFile(__dirname + '/fixtures.sql', function (err, fixtures_) {
         if (err) return callback(err);
-        zlib.gunzip(gz, function (err, queries) {
-            if (err) return callback(err);
-            fixtures = queries.toString();
-            callback(null, fixtures);
-        });
+        fixtures = fixtures_.toString();
+        callback(null, fixtures);
     });
 }
 
