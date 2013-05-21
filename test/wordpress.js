@@ -71,4 +71,39 @@ describe('Wordpress', function () {
 
     });
 
+    describe('Blog', function () {
+
+        it('should load metadata', function (done) {
+            var multisite = new wordpress.Multisite(db);
+            multisite.getBlogs(function (err, blogs) {
+                if (err) return done(err);
+                var foo = blogs[0];
+                foo.loadMetadata(function (err, metadata) {
+                    if (err) return done(err);
+                    assert.equal(typeof metadata, 'object');
+                    assert.equal(metadata.twitter, 'bacon');
+                    assert.equal(Object.keys(metadata).length, 123);
+                    done();
+                });
+            });
+        });
+
+        it('should load metadata using a mask', function (done) {
+            var multisite = new wordpress.Multisite(db);
+            multisite.getBlogs(function (err, blogs) {
+                if (err) return done(err);
+                var foo = blogs[0];
+                foo.loadMetadata([ 'twitter' ], function (err, metadata) {
+                    if (err) return done(err);
+                    assert.equal(typeof metadata, 'object');
+                    assert.equal(metadata.twitter, 'bacon');
+                    assert.equal(Object.keys(metadata).length, 1);
+                    done();
+                });
+            });
+        });
+
+    });
+
 });
+
