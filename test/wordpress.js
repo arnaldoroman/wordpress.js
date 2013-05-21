@@ -40,18 +40,36 @@ describe('Wordpress', function () {
         });
     });
 
-    it('should load all blogs on a multisite install', function (done) {
-        var multisite = new wordpress.Multisite(db);
-        multisite.getBlogs(function (err, blogs) {
-            if (err) return done(err);
-            assert(Array.isArray(blogs));
-            assert.equal(blogs.length, 2);
-            assert.equal(blogs[0].id, 2);
-            assert.equal(blogs[0].name, 'foo');
-            assert.equal(blogs[1].id, 3);
-            assert.equal(blogs[1].name, 'bar');
-            done();
+    describe('Multisite', function () {
+
+        it('should load all blogs', function (done) {
+            var multisite = new wordpress.Multisite(db);
+            multisite.getBlogs(function (err, blogs) {
+                if (err) return done(err);
+                assert(Array.isArray(blogs));
+                assert.equal(blogs.length, 2);
+                assert.equal(blogs[0].id, 2);
+                assert.equal(blogs[0].name, 'foo');
+                assert.equal(blogs[0].public, true);
+                assert.equal(blogs[1].id, 3);
+                assert.equal(blogs[1].name, 'bar');
+                assert.equal(blogs[1].public, true);
+                done();
+            });
         });
+
+        it('should accept and use a database name', function (done) {
+            var multisite = new wordpress.Multisite(db, { database: db_config.db });
+            multisite.getBlogs(function (err, blogs) {
+                if (err) return done(err);
+                assert(Array.isArray(blogs));
+                assert.equal(blogs.length, 2);
+                assert.equal(blogs[0].id, 2);
+                assert.equal(blogs[1].id, 3);
+                done();
+            });
+        });
+
     });
 
 });
