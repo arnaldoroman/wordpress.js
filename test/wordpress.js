@@ -335,7 +335,11 @@ describe('Wordpress', function () {
             });
         });
 
-        it('should emit a blog event when in live mode and when load is complete', function (done) {
+    });
+
+    describe('Live', function () {
+
+        it('should emit a blog event when load is complete', function (done) {
             var multisite = new wordpress.Multisite(db, {
                 live: true
               , postmeta_keys: [ 'orientation' ]
@@ -373,8 +377,21 @@ describe('Wordpress', function () {
             });
         });
 
+        it('should pick up new posts');
+
+        it('should pick up updated posts');
+
+        it('should remove posts that are drafted or trashed after publishing');
+
+        it('should pick up scheduled posts before initial load that are later published');
+
+        it('should pick up scheduled posts after initial load that are later published');
+
+        it('should detect changes to blog metadata');
+
+        it('should detect changes to terms');
+
     });
 
 });
-
 
