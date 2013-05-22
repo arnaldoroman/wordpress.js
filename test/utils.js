@@ -46,5 +46,18 @@ describe('Utilities', function () {
         assert.equal(utils.excerpt('foo [caption bla]<img src="foo.jpg">[/caption] bar', 11), 'foo bar');
     });
 
+    it('should calculate object diffs', function () {
+        var foo = { a: 'b', c: 'd' }
+          , bar = { x: 'z', c: 'e' }
+          , called = false;
+        utils.diff(foo, bar, function (added, changed, deleted) {
+            called = true;
+            assert.deepEqual(added, [ 'x' ]);
+            assert.deepEqual(changed, [ 'c' ]);
+            assert.deepEqual(deleted, [ 'a' ]);
+        });
+        assert(called);
+    });
+
 });
 
