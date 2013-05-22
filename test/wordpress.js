@@ -4,22 +4,29 @@ var assert = require('assert')
   , fs = require('fs');
 
 var config = require('../test_config.js')
-  , db = new wordpress.MySQL(config)
-  , cache = {};
+  , db = new wordpress.MySQL(config);
 
-function getBlog(name, callback) {
-    if (name in cache) {
-        return callback(null, cache[name]);
+function getBlog(name, options, callback) {
+    if (typeof options === 'function') {
+        callback = options;
+        options = {};
     }
-    var multisite = new wordpress.Multisite(db);
+    var multisite = new wordpress.Multisite(db, options);
     multisite.getBlogs(function (err, blogs) {
         if (err) return callback(err);
         for (var i = 0; i < blogs.length; i++) {
             if (blogs[i].name === name) {
-                cache[name] = blogs[i];
                 return callback(null, blogs[i]);
             }
         }
+        callback(new Error('Blog not found'));
+    });
+}
+
+function getBlogWatcher(name, options, callback) {
+    getBlog(name, options, function (err, blog) {
+        if (err) return callback(err);
+        callback(null, new wordpress.Watcher(blog));
     });
 }
 
@@ -258,10 +265,9 @@ describe('Wordpress', function () {
                 wordpress.Post.apply(this, arguments);
             }
             inherits(MyPost, wordpress.Post);
-            var multisite = new wordpress.Multisite(db, { Post: MyPost });
-            multisite.getBlogs(function (err, blogs) {
+            getBlog('foo', { Post: MyPost }, function (err, foo) {
                 if (err) return done(err);
-                blogs[0].loadPosts(function (err, posts) {
+                foo.loadPosts(function (err, posts) {
                     if (err) return done(err);
                     assert.equal(posts.length, 3);
                     posts.forEach(function (post) {
@@ -282,13 +288,12 @@ describe('Wordpress', function () {
             }
             inherits(MyTag, wordpress.Tag);
             inherits(MyCategory, wordpress.Category);
-            var multisite = new wordpress.Multisite(db, {
+            getBlog('foo', {
                 Tag: MyTag
               , Category: MyCategory
-            });
-            multisite.getBlogs(function (err, blogs) {
+            }, function (err, foo) {
                 if (err) return done(err);
-                blogs[0].loadTerms(function (err, terms) {
+                foo.loadTerms(function (err, terms) {
                     if (err) return done(err);
                     assert(terms['3'] instanceof MyCategory);
                     assert(terms['3'] instanceof wordpress.Category);
@@ -300,13 +305,11 @@ describe('Wordpress', function () {
         });
 
         it('should load an entire blog', function (done) {
-            var multisite = new wordpress.Multisite(db, {
+            getBlog('foo', {
                 postmeta_keys: [ 'orientation' ]
               , option_keys: [ 'pinterest' ]
-            });
-            multisite.getBlogs(function (err, blogs) {
+            }, function (err, foo) {
                 if (err) return done(err);
-                var foo = blogs[0];
                 foo.load(function (err, posts, metadata, terms) {
                     if (err) return done(err);
                     assert.equal(typeof metadata, 'object');
@@ -340,15 +343,11 @@ describe('Wordpress', function () {
     describe('Watcher', function () {
 
         it('should emit a blog event when load is complete', function (done) {
-            var multisite = new wordpress.Multisite(db, {
-                live: true
-              , postmeta_keys: [ 'orientation' ]
+            getBlogWatcher('foo', {
+                postmeta_keys: [ 'orientation' ]
               , option_keys: [ 'pinterest' ]
-            });
-            multisite.getBlogs(function (err, blogs) {
+            }, function (err, watcher) {
                 if (err) return done(err);
-                var foo = blogs[0];
-                var watcher = new wordpress.Watcher(foo);
                 watcher.on('blog', function (posts, metadata, terms) {
                     assert.equal(typeof metadata, 'object');
                     assert.equal(Object.keys(metadata).length, 1);
