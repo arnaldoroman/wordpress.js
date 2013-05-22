@@ -142,6 +142,20 @@ describe('Wordpress', function () {
             });
         });
 
+        it('should load post to term relationships using an ID mask', function (done) {
+            getBlog('foo', function (err, foo) {
+                if (err) return done(err);
+                foo.loadTermRelationships([ 1, 2 ], function (err, relationships) {
+                    if (err) return done(err);
+                    assert.deepEqual(relationships, {
+                        '1': [ '2', '3', '4' ]
+                      , '2': [ '3', '6', '7', '8' ]
+                    });
+                    done();
+                });
+            });
+        });
+
         it('should load posts', function (done) {
             getBlog('foo', function (err, foo) {
                 if (err) return done(err);
