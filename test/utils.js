@@ -50,7 +50,7 @@ describe('Utilities', function () {
         var foo = { a: 'b', c: 'd' }
           , bar = { x: 'z', c: 'e' }
           , called = false;
-        utils.diff(foo, bar, function (added, changed, deleted) {
+        utils.diff(foo, bar, function (changed, added, deleted) {
             called = true;
             assert.deepEqual(added, [ 'x' ]);
             assert.deepEqual(changed, [ 'c' ]);
