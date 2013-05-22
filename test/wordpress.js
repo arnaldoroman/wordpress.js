@@ -337,7 +337,7 @@ describe('Wordpress', function () {
 
     });
 
-    describe('Live', function () {
+    describe('Watcher', function () {
 
         it('should emit a blog event when load is complete', function (done) {
             var multisite = new wordpress.Multisite(db, {
@@ -348,7 +348,8 @@ describe('Wordpress', function () {
             multisite.getBlogs(function (err, blogs) {
                 if (err) return done(err);
                 var foo = blogs[0];
-                foo.on('blog', function (posts, metadata, terms) {
+                var watcher = new wordpress.Watcher(foo);
+                watcher.on('blog', function (posts, metadata, terms) {
                     assert.equal(typeof metadata, 'object');
                     assert.equal(Object.keys(metadata).length, 1);
                     assert.equal(metadata.pinterest, 'bacon');
@@ -372,8 +373,8 @@ describe('Wordpress', function () {
                     assert(terms['7'] instanceof wordpress.Tag);
                     done();
                 });
-                foo.on('error', done);
-                foo.abort();
+                watcher.on('error', done);
+                watcher.abort();
             });
         });
 
