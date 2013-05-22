@@ -161,6 +161,8 @@ describe('Wordpress', function () {
                     assert.equal(post.slug, '/2011/11/bacon-ipsum');
                     assert.equal(post.title, 'Bacon ipsum');
                     assert.equal(post.image, '/foo/files/2011/01/2.jpg');
+                    assert.equal(post.excerpt, 'Has anyone really been far even as decided to ' +
+                        'use even go want to do look more like?');
                     post = posts[2];
                     assert.equal(post.id, '2');
                     assert.equal(post.slug, '/2009/08/ham-andouille-speck');
@@ -209,6 +211,18 @@ describe('Wordpress', function () {
                     assert.equal(post.id, '1');
                     assert.equal(post.slug, '/2011/11/bacon-ipsum');
                     assert.equal(post.meta_orientation, 'top');
+                    done();
+                });
+            });
+        });
+
+        it('should generate an excerpt from the content', function (done) {
+            getBlog('foo', function (err, foo) {
+                if (err) return done(err);
+                foo.loadPost(3, function (err, post) {
+                    if (err) return done(err);
+                    assert.equal(post.excerpt, 'Shankle brisket pancetta leberkas. ' +
+                        'Bresaola sirloin pork chop ribeye beef ham...');
                     done();
                 });
             });
