@@ -1,5 +1,6 @@
 var assert = require('assert')
   , wordpress = require('../lib/wordpress')
+  , inherits = require('util').inherits
   , fs = require('fs');
 
 var fixtures = null, cache = {};
@@ -239,6 +240,52 @@ describe('Wordpress', function () {
                 foo.loadPost(9999, function (err, post) {
                     if (err) return done(err);
                     assert.equal(post, null);
+                    done();
+                });
+            });
+        });
+
+        it('should allow for a custom Post type', function (done) {
+            function MyPost() {
+                wordpress.Post.apply(this, arguments);
+            }
+            inherits(MyPost, wordpress.Post);
+            var multisite = new wordpress.Multisite(db, { Post: MyPost });
+            multisite.getBlogs(function (err, blogs) {
+                if (err) return done(err);
+                blogs[0].loadPosts(function (err, posts) {
+                    if (err) return done(err);
+                    assert.equal(posts.length, 3);
+                    posts.forEach(function (post) {
+                        assert(post instanceof MyPost);
+                        assert(post instanceof wordpress.Post);
+                    });
+                    done();
+                });
+            });
+        });
+
+        it('should allow for custom Tag and Category types', function (done) {
+            function MyTag() {
+                wordpress.Tag.apply(this, arguments);
+            }
+            function MyCategory() {
+                wordpress.Category.apply(this, arguments);
+            }
+            inherits(MyTag, wordpress.Tag);
+            inherits(MyCategory, wordpress.Category);
+            var multisite = new wordpress.Multisite(db, {
+                Tag: MyTag
+              , Category: MyCategory
+            });
+            multisite.getBlogs(function (err, blogs) {
+                if (err) return done(err);
+                blogs[0].loadTerms(function (err, terms) {
+                    if (err) return done(err);
+                    assert(terms['3'] instanceof MyCategory);
+                    assert(terms['3'] instanceof wordpress.Category);
+                    assert(terms['7'] instanceof MyTag);
+                    assert(terms['7'] instanceof wordpress.Tag);
                     done();
                 });
             });
