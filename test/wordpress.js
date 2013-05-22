@@ -3,25 +3,9 @@ var assert = require('assert')
   , inherits = require('util').inherits
   , fs = require('fs');
 
-var fixtures = null, cache = {};
-
-function loadFixtures(callback) {
-    if (fixtures !== null) {
-        return callback(null, fixtures);
-    }
-    fs.readFile(__dirname + '/fixtures.sql', function (err, fixtures_) {
-        if (err) return callback(err);
-        fixtures = fixtures_.toString();
-        callback(null, fixtures);
-    });
-}
-
-function importFixtures(db, callback) {
-    loadFixtures(function (err, fixtures) {
-        if (err) return callback(err);
-        db.query(fixtures, callback);
-    });
-}
+var config = require('../test_config.js')
+  , db = new wordpress.MySQL(config)
+  , cache = {};
 
 function getBlog(name, callback) {
     if (name in cache) {
@@ -39,16 +23,15 @@ function getBlog(name, callback) {
     });
 }
 
-var config = require('../test_config.js');
-
-var db = new wordpress.MySQL(config);
-
 describe('Wordpress', function () {
 
     before(function (callback) {
         db.connect(function (err) {
             if (err) return callback(err);
-            importFixtures(db, callback);
+            fs.readFile(__dirname + '/fixtures.sql', function (err, fixtures) {
+                if (err) return callback(err);
+                db.query(fixtures.toString(), callback);
+            });
         });
     });
 
