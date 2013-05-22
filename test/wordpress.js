@@ -291,6 +291,42 @@ describe('Wordpress', function () {
             });
         });
 
+        it('should load an entire blog', function (done) {
+            var multisite = new wordpress.Multisite(db, {
+                postmeta_keys: [ 'orientation' ]
+              , option_keys: [ 'pinterest' ]
+            });
+            multisite.getBlogs(function (err, blogs) {
+                if (err) return done(err);
+                var foo = blogs[0];
+                foo.load(function (err, posts, metadata, terms) {
+                    if (err) return done(err);
+                    assert.equal(typeof metadata, 'object');
+                    assert.equal(Object.keys(metadata).length, 1);
+                    assert.equal(metadata.pinterest, 'bacon');
+                    assert(Array.isArray(posts));
+                    assert.equal(posts.length, 3);
+                    assert(posts[0].date > posts[1].date && posts[1].date > posts[2].date);
+                    var post = posts[0];
+                    assert.equal(post.id, '1');
+                    assert.equal(post.title, 'Bacon ipsum');
+                    assert(Array.isArray(post.tags));
+                    assert(Array.isArray(post.categories));
+                    assert.equal(post.tags.length, 1);
+                    assert.equal(post.categories.length, 2);
+                    assert.equal(post.tags[0].name, 'Radical');
+                    assert.equal(post.categories[1].name, 'Shopping');
+                    assert(Array.isArray(post.categories[1].children));
+                    assert.equal(post.categories[1].children.length, 1);
+                    assert(typeof terms, 'object');
+                    assert(Object.keys(terms).length, 11);
+                    assert(terms['3'] instanceof wordpress.Category);
+                    assert(terms['7'] instanceof wordpress.Tag);
+                    done();
+                });
+            });
+        });
+
     });
 
 });
