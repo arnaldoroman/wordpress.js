@@ -48,10 +48,7 @@ describe('Wordpress', function () {
     before(function (callback) {
         db.connect(function (err) {
             if (err) return callback(err);
-            importFixtures(db, function (err) {
-                if (err) return callback(err);
-                getBlog('foo', callback);
-            });
+            importFixtures(db, callback);
         });
     });
 
