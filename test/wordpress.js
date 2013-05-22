@@ -391,6 +391,10 @@ describe('Wordpress', function () {
 
         it('should detect changes to terms');
 
+        it('should detect post => term relationship changes');
+
+        it('should propagate term changes across post objects');
+
     });
 
 });
