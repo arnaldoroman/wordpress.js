@@ -124,10 +124,13 @@ describe('Wordpress', function () {
                     assert(Array.isArray(category.children));
                     assert.equal(category.children[0], subcategory);
                     assert.equal(subcategory.name, 'Subcategory');
+                    assert.equal(subcategory.parent, category);
                     assert(Array.isArray(subcategory.children));
                     assert.equal(subcategory.children[0], subsubcategory);
                     assert.equal(subsubcategory.name, 'Subsubcategory');
                     assert.equal(subsubcategory.children, null);
+                    assert.equal(subsubcategory.parent, subcategory);
+                    assert.equal(subsubcategory.parent.parent, category);
                     done();
                 });
             });
@@ -632,9 +635,11 @@ describe('Wordpress', function () {
                                     '4', '5', '6', '7', '10', '100' ]);
                                 assert.equal(updated_terms['100'].name, 'Foo');
                                 assert.equal(updated_terms['100'].slug, 'foo');
+                                assert.equal(updated_terms['100'].parent.name, updated_terms['6'].name);
                                 assert.equal(updated_terms['6'].children[0], updated_terms['100']);
                                 assert.equal(terms['100'].name, 'Foo');
                                 assert.equal(terms['100'].slug, 'foo');
+                                assert.equal(terms['100'].parent.name, terms['6'].name);
                                 assert.equal(terms['6'].children[0], terms['100']);
                                 done();
                             }, 100);
