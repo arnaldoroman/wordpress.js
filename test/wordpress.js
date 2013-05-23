@@ -312,7 +312,7 @@ describe('Wordpress', function () {
               , option_keys: [ 'pinterest' ]
             }, function (err, foo) {
                 if (err) return done(err);
-                foo.load(function (err, posts, metadata, terms) {
+                foo.load(function (err, posts, metadata) {
                     if (err) return done(err);
                     assert.equal(typeof metadata, 'object');
                     assert.equal(Object.keys(metadata).length, 1);
@@ -332,10 +332,10 @@ describe('Wordpress', function () {
                     assert.equal(post.categories[1].name, 'Shopping');
                     assert(Array.isArray(post.categories[1].children));
                     assert.equal(post.categories[1].children.length, 1);
-                    assert(typeof terms, 'object');
-                    assert(Object.keys(terms).length, 11);
-                    assert(terms['3'] instanceof wordpress.Category);
-                    assert(terms['7'] instanceof wordpress.Tag);
+                    assert(typeof metadata.terms, 'object');
+                    assert(Object.keys(metadata.terms).length, 11);
+                    assert(metadata.terms['3'] instanceof wordpress.Category);
+                    assert(metadata.terms['7'] instanceof wordpress.Tag);
                     done();
                 });
             });
@@ -351,7 +351,7 @@ describe('Wordpress', function () {
               , option_keys: [ 'pinterest' ]
             }, function (err, watcher) {
                 if (err) return done(err);
-                watcher.on('blog', function (posts, metadata, terms) {
+                watcher.on('blog', function (posts, metadata) {
                     assert.equal(typeof metadata, 'object');
                     assert.equal(Object.keys(metadata).length, 1);
                     assert.equal(metadata.pinterest, 'bacon');
@@ -370,10 +370,10 @@ describe('Wordpress', function () {
                     assert.equal(post.categories[1].name, 'Shopping');
                     assert(Array.isArray(post.categories[1].children));
                     assert.equal(post.categories[1].children.length, 1);
-                    assert(typeof terms, 'object');
-                    assert(Object.keys(terms).length, 11);
-                    assert(terms['3'] instanceof wordpress.Category);
-                    assert(terms['7'] instanceof wordpress.Tag);
+                    assert(typeof metadata.terms, 'object');
+                    assert(Object.keys(metadata.terms).length, 11);
+                    assert(metadata.terms['3'] instanceof wordpress.Category);
+                    assert(metadata.terms['7'] instanceof wordpress.Tag);
                     done();
                 });
                 watcher.on('error', done);
@@ -619,8 +619,8 @@ describe('Wordpress', function () {
                 option_keys: [ 'pinterest' ]
             }, function (err, watcher) {
                 var updated_terms = null;
-                watcher.on('blog', function (posts, metadata, terms) {
-                    assert.deepEqual(Object.keys(terms), [ '1', '2', '3',
+                watcher.on('blog', function (posts, metadata) {
+                    assert.deepEqual(Object.keys(metadata.terms), [ '1', '2', '3',
                         '4', '5', '6', '7', '10' ]);
                     db.query(function () {/*
                         INSERT INTO wp_3_terms VALUES (100, 'Foo', 'foo', 0);
@@ -637,10 +637,10 @@ describe('Wordpress', function () {
                                 assert.equal(updated_terms['100'].slug, 'foo');
                                 assert.equal(updated_terms['100'].parent.name, updated_terms['6'].name);
                                 assert.equal(updated_terms['6'].children[0], updated_terms['100']);
-                                assert.equal(terms['100'].name, 'Foo');
-                                assert.equal(terms['100'].slug, 'foo');
-                                assert.equal(terms['100'].parent.name, terms['6'].name);
-                                assert.equal(terms['6'].children[0], terms['100']);
+                                assert.equal(metadata.terms['100'].name, 'Foo');
+                                assert.equal(metadata.terms['100'].slug, 'foo');
+                                assert.equal(metadata.terms['100'].parent.name, metadata.terms['6'].name);
+                                assert.equal(metadata.terms['6'].children[0], metadata.terms['100']);
                                 done();
                             }, 100);
                         });
