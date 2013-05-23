@@ -6,7 +6,7 @@ var assert = require('assert')
   , fs = require('fs');
 
 var config = require('../test_config.js')
-  , db = new wordpress.MySQL(config);
+  , db = new wordpress.Connection(config);
 
 function getBlog(name, options, callback) {
     if (typeof options === 'function') {
