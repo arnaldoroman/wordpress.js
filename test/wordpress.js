@@ -1,3 +1,5 @@
+/*jshint -W015 */
+
 var assert = require('assert')
   , wordpress = require('../lib/wordpress')
   , inherits = require('util').inherits
@@ -119,15 +121,12 @@ describe('Wordpress', function () {
                     assert.equal(tag.slug, 'awesome');
                     assert.equal(category.name, 'Shopping');
                     assert.equal(category.slug, 'shopping');
-                    assert.equal(category.parent, null);
                     assert(Array.isArray(category.children));
                     assert.equal(category.children[0], subcategory);
                     assert.equal(subcategory.name, 'Subcategory');
-                    assert.equal(subcategory.parent, category);
                     assert(Array.isArray(subcategory.children));
                     assert.equal(subcategory.children[0], subsubcategory);
                     assert.equal(subsubcategory.name, 'Subsubcategory');
-                    assert.equal(subsubcategory.parent, subcategory);
                     assert.equal(subsubcategory.children, null);
                     done();
                 });
@@ -321,6 +320,7 @@ describe('Wordpress', function () {
                     var post = posts[0];
                     assert.equal(post.id, '1');
                     assert.equal(post.title, 'Bacon ipsum');
+                    assert.equal(post.meta_orientation, 'top');
                     assert(Array.isArray(post.tags));
                     assert(Array.isArray(post.categories));
                     assert.equal(post.tags.length, 1);
@@ -358,6 +358,7 @@ describe('Wordpress', function () {
                     var post = posts[0];
                     assert.equal(post.id, '1');
                     assert.equal(post.title, 'Bacon ipsum');
+                    assert.equal(post.meta_orientation, 'top');
                     assert(Array.isArray(post.tags));
                     assert(Array.isArray(post.categories));
                     assert.equal(post.tags.length, 1);
@@ -377,25 +378,319 @@ describe('Wordpress', function () {
             });
         });
 
-        it('should pick up new posts');
+        it('should pick up new posts', function (done) {
+            db.query(function () {/*
+                UPDATE wp_3_posts
+                SET post_status = "draft",
+                    post_modified_gmt = NOW()
+                WHERE ID = 3
+            */}, function (err) {
+                if (err) return done(err);
+                getBlogWatcher('bar', {
+                    postmeta_keys: [ 'orientation' ]
+                  , option_keys: [ 'pinterest' ]
+                }, function (err, watcher) {
+                    var new_post = null;
+                    watcher.on('blog', function (posts) {
+                        assert.equal(posts.length, 2);
+                        db.query(function () {/*
+                            UPDATE wp_3_posts
+                            SET post_status = "publish",
+                                post_modified_gmt = NOW()
+                            WHERE ID = 3
+                        */}, function (err) {
+                            if (err) return done(err);
+                            watcher.poll(function (err) {
+                                if (err) return done(err);
+                                setTimeout(function () {
+                                    assert(new_post);
+                                    assert.equal(new_post.id, '3');
+                                    assert.equal(new_post.meta_orientation, 'top');
 
-        it('should pick up updated posts');
+                                    done();
+                                }, 100);
+                            });
+                        });
+                    });
+                    watcher.on('new_post', function (post) {
+                        new_post = post;
+                    });
+                    watcher.abort();
+                });
+            });
+        });
 
-        it('should remove posts that are drafted or trashed after publishing');
+        it('should pick up updated posts', function (done) {
+            getBlogWatcher('bar', {
+                postmeta_keys: [ 'orientation' ]
+              , option_keys: [ 'pinterest' ]
+            }, function (err, watcher) {
+                var updated_post = null;
+                watcher.on('blog', function (posts) {
+                    assert.equal(posts.length, 3);
+                    db.query(function () {/*
+                        UPDATE wp_3_posts
+                        SET post_content = "foo",
+                            post_modified_gmt = NOW()
+                        WHERE ID = 3
+                    */}, function (err) {
+                        if (err) return done(err);
+                        watcher.poll(function (err) {
+                            if (err) return done(err);
+                            setTimeout(function () {
+                                assert(updated_post);
+                                assert.equal(updated_post.id, '3');
+                                assert.equal(updated_post.content, 'foo');
+                                assert.equal(updated_post.meta_orientation, 'top');
+                                done();
+                            }, 100);
+                        });
+                    });
+                });
+                watcher.on('updated_post', function (post) {
+                    updated_post = post;
+                });
+                watcher.abort();
+            });
+        });
 
-        it('should pick up scheduled posts before initial load that are later published');
+        it('should remove posts that are drafted or trashed after publishing', function (done) {
+            getBlogWatcher('bar', {
+                postmeta_keys: [ 'orientation' ]
+              , option_keys: [ 'pinterest' ]
+            }, function (err, watcher) {
+                var removed_post = null;
+                watcher.on('blog', function (posts) {
+                    assert.equal(posts.length, 3);
+                    db.query(function () {/*
+                        UPDATE wp_3_posts
+                        SET post_status = "draft",
+                            post_modified_gmt = NOW()
+                        WHERE ID = 3
+                    */}, function (err) {
+                        if (err) return done(err);
+                        watcher.poll(function (err) {
+                            if (err) return done(err);
+                            setTimeout(function () {
+                                assert(removed_post);
+                                assert.equal(removed_post.id, '3');
+                                done();
+                            }, 100);
+                        });
+                    });
+                });
+                watcher.on('removed_post', function (post) {
+                    removed_post = post;
+                });
+                watcher.abort();
+            });
+        });
 
-        it('should pick up scheduled posts after initial load that are later published');
+        it('should pick up scheduled posts before initial load that are later published', function (done) {
+            db.query(function () {/*
+                UPDATE wp_3_posts
+                SET post_status = "future"
+                WHERE ID = 3
+            */}, function (err) {
+                if (err) return done(err);
+                getBlogWatcher('bar', {
+                    postmeta_keys: [ 'orientation' ]
+                  , option_keys: [ 'pinterest' ]
+                }, function (err, watcher) {
+                    var new_post = null;
+                    watcher.on('blog', function (posts) {
+                        assert.equal(posts.length, 2);
+                        db.query(function () {/*
+                            UPDATE wp_3_posts
+                            SET post_status = "publish"
+                            WHERE ID = 3
+                        */}, function (err) {
+                            if (err) return done(err);
+                            watcher.poll(function (err) {
+                                if (err) return done(err);
+                                setTimeout(function () {
+                                    assert(new_post);
+                                    assert.equal(new_post.id, '3');
+                                    assert.equal(new_post.meta_orientation, 'top');
+                                    done();
+                                }, 100);
+                            });
+                        });
+                    });
+                    watcher.on('new_post', function (post) {
+                        new_post = post;
+                    });
+                    watcher.abort();
+                });
+            });
+        });
 
-        it('should detect changes to blog metadata');
+        it('should pick up scheduled posts after initial load that are later published', function (done) {
+            getBlogWatcher('bar', {
+                postmeta_keys: [ 'orientation' ]
+              , option_keys: [ 'pinterest' ]
+            }, function (err, watcher) {
+                var removed_post = null
+                  , new_post = null;
+                watcher.on('blog', function (posts) {
+                    assert.equal(posts.length, 3);
+                    db.query(function () {/*
+                        UPDATE wp_3_posts
+                        SET post_status = "future",
+                            post_modified_gmt = NOW()
+                        WHERE ID = 3
+                    */}, function (err) {
+                        if (err) return done(err);
+                        watcher.poll(function (err) {
+                            if (err) return done(err);
+                            setTimeout(function () {
+                                assert(removed_post);
+                                assert.equal(removed_post.id, '3');
+                                db.query(function () {/*
+                                    UPDATE wp_3_posts
+                                    SET post_status = "publish"
+                                    WHERE ID = 3
+                                */}, function (err) {
+                                    if (err) return done(err);
+                                    watcher.poll(function (err) {
+                                        if (err) return done(err);
+                                        setTimeout(function () {
+                                            assert(new_post);
+                                            assert.equal(new_post.id, '3');
+                                            assert.equal(new_post.meta_orientation, 'top');
+                                            done();
+                                        }, 100);
+                                    });
+                                });
+                            }, 100);
+                        });
+                    });
+                });
+                watcher.on('new_post', function (post) {
+                    new_post = post;
+                });
+                watcher.on('removed_post', function (post) {
+                    removed_post = post;
+                });
+                watcher.abort();
+            });
+        });
 
-        it('should detect changes to terms');
+        it('should detect changes to blog metadata', function (done) {
+            getBlogWatcher('bar', {
+                option_keys: [ 'pinterest' ]
+            }, function (err, watcher) {
+                var key, previous, current;
+                watcher.on('blog', function (posts, metadata) {
+                    assert.equal(metadata.pinterest, 'bacon');
+                    db.query(function () {/*
+                        UPDATE wp_3_options
+                        SET option_value = "foobar"
+                        WHERE option_name = "pinterest"
+                    */}, function (err) {
+                        if (err) return done(err);
+                        watcher.poll(function (err) {
+                            if (err) return done(err);
+                            setTimeout(function () {
+                                assert(key && previous && current);
+                                assert.equal(key, 'pinterest');
+                                assert.equal(previous, 'bacon');
+                                assert.equal(current, 'foobar');
+                                assert.equal(metadata.pinterest, 'foobar');
+                                done();
+                            }, 100);
+                        });
+                    });
+                });
+                watcher.on('updated_metadata', function (key_, previous_, current_) {
+                    key = key_;
+                    previous = previous_;
+                    current = current_;
+                });
+                watcher.abort();
+            });
+        });
 
-        it('should detect post => term relationship changes');
+        it('should detect changes to terms', function (done) {
+            getBlogWatcher('bar', {
+                option_keys: [ 'pinterest' ]
+            }, function (err, watcher) {
+                var updated_terms = null;
+                watcher.on('blog', function (posts, metadata, terms) {
+                    assert.deepEqual(Object.keys(terms), [ '1', '2', '3',
+                        '4', '5', '6', '7', '10' ]);
+                    db.query(function () {/*
+                        INSERT INTO wp_3_terms VALUES (100, 'Foo', 'foo', 0);
+                        INSERT INTO wp_3_term_taxonomy VALUES (100, 100, 'category', '', 6, 0)
+                    */}, function (err) {
+                        if (err) return done(err);
+                        watcher.poll(function (err) {
+                            if (err) return done(err);
+                            setTimeout(function () {
+                                assert(updated_terms);
+                                assert.deepEqual(Object.keys(updated_terms), [ '1', '2', '3',
+                                    '4', '5', '6', '7', '10', '100' ]);
+                                assert.equal(updated_terms['100'].name, 'Foo');
+                                assert.equal(updated_terms['100'].slug, 'foo');
+                                assert.equal(updated_terms['6'].children[0], updated_terms['100']);
+                                assert.equal(terms['100'].name, 'Foo');
+                                assert.equal(terms['100'].slug, 'foo');
+                                assert.equal(terms['6'].children[0], terms['100']);
+                                done();
+                            }, 100);
+                        });
+                    });
+                });
+                watcher.on('updated_terms', function (terms) {
+                    updated_terms = terms;
+                });
+                watcher.abort();
+            });
+        });
 
-        it('should propagate term changes across post objects');
+        it('should pick up modifications to post terms', function (done) {
+            getBlogWatcher('bar', {
+                postmeta_keys: [ 'orientation' ]
+              , option_keys: [ 'pinterest' ]
+            }, function (err, watcher) {
+                var updated_post = null;
+                watcher.on('blog', function (posts) {
+                    assert.equal(posts.length, 3);
+                    var post = posts[2];
+                    assert.equal(post.id, '3');
+                    assert.deepEqual(post.categories.map(function (cat) {
+                        return cat.name;
+                    }), [ 'Advertorial', 'Travel' ]);
+                    db.query(function () {/*
+                        UPDATE wp_3_posts
+                        SET post_modified_gmt = NOW()
+                        WHERE ID = 3;
+                        INSERT INTO wp_3_term_relationships VALUES (3,6,0)
+                    */}, function (err) {
+                        if (err) return done(err);
+                        watcher.poll(function (err) {
+                            if (err) return done(err);
+                            setTimeout(function () {
+                                assert(updated_post);
+                                assert.equal(updated_post.id, '3');
+                                assert.deepEqual(updated_post.categories.map(function (cat) {
+                                    return cat.name;
+                                }), [ 'Advertorial', 'News', 'Travel' ]);
+                                done();
+                            }, 100);
+                        });
+                    });
+                });
+                watcher.on('updated_post', function (post) {
+                    updated_post = post;
+                });
+                watcher.abort();
+            });
+        });
 
     });
 
 });
+
+/*jshint +W015 */
 

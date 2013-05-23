@@ -156,7 +156,9 @@ CREATE TABLE IF NOT EXISTS `wp_3_term_relationships` (
   KEY `term_taxonomy_id` (`term_taxonomy_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
-REPLACE INTO `wp_3_term_relationships` VALUES (1,2,0),(1,3,0),(1,4,0),(1,5,0),(2,5,0),(2,6,0),(2,7,0),(3,2,0),(3,4,0),(3,5,0),(3,10,0);
+TRUNCATE wp_3_term_relationships;
+
+INSERT INTO `wp_3_term_relationships` VALUES (1,2,0),(1,3,0),(1,4,0),(1,5,0),(2,5,0),(2,6,0),(2,7,0),(3,2,0),(3,4,0),(3,5,0),(3,10,0);
 
 CREATE TABLE IF NOT EXISTS `wp_3_term_taxonomy` (
   `term_taxonomy_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -170,7 +172,9 @@ CREATE TABLE IF NOT EXISTS `wp_3_term_taxonomy` (
   KEY `taxonomy` (`taxonomy`)
 ) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
 
-REPLACE INTO `wp_3_term_taxonomy` VALUES (1,1,'category','',0,0),(2,2,'category','',0,0),(3,3,'category','',0,0),(4,4,'post_tag','',0,0),(5,5,'post_tag','',0,0),(6,6,'category','',0,0),(7,7,'category','',0,0),(10,10,'category','',0,0);
+TRUNCATE wp_3_term_taxonomy;
+
+INSERT INTO `wp_3_term_taxonomy` VALUES (1,1,'category','',0,0),(2,2,'category','',0,0),(3,3,'category','',0,0),(4,4,'post_tag','',0,0),(5,5,'post_tag','',0,0),(6,6,'category','',0,0),(7,7,'category','',0,0),(10,10,'category','',0,0);
 
 CREATE TABLE IF NOT EXISTS `wp_3_terms` (
   `term_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -182,7 +186,9 @@ CREATE TABLE IF NOT EXISTS `wp_3_terms` (
   KEY `name` (`name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
 
-REPLACE INTO `wp_3_terms` VALUES (1,'Uncategorized','uncategorized',0),(2,'Advertorial','advertorial',0),(3,'Personal','personal',0),(4,'Awesome','awesome',0),(5,'Radical','radical',0),(6,'News','news',0),(7,'Photography','photography',0),(10,'Travel','travel',0);
+TRUNCATE wp_3_terms;
+
+INSERT INTO `wp_3_terms` VALUES (1,'Uncategorized','uncategorized',0),(2,'Advertorial','advertorial',0),(3,'Personal','personal',0),(4,'Awesome','awesome',0),(5,'Radical','radical',0),(6,'News','news',0),(7,'Photography','photography',0),(10,'Travel','travel',0);
 
 CREATE TABLE IF NOT EXISTS `wp_blogs` (
   `blog_id` bigint(20) NOT NULL AUTO_INCREMENT,
