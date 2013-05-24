@@ -534,7 +534,8 @@ describe('Wordpress', function () {
               , option_keys: [ 'pinterest' ]
             }, function (err, watcher) {
                 var removed_post = null
-                  , new_post = null;
+                  , new_post = null
+                  , scheduled_post = null;
                 watcher.on('blog', function (posts) {
                     assert.equal(posts.length, 3);
                     db.query(function () {/*
@@ -549,6 +550,7 @@ describe('Wordpress', function () {
                             setTimeout(function () {
                                 assert(removed_post);
                                 assert.equal(removed_post.id, '3');
+                                assert.equal(scheduled_post, '3');
                                 db.query(function () {/*
                                     UPDATE wp_3_posts
                                     SET post_status = "publish"
@@ -575,6 +577,9 @@ describe('Wordpress', function () {
                 watcher.on('removed_post', function (post) {
                     removed_post = post;
                 });
+                watcher.on('scheduled_post', function (post) {
+                    scheduled_post = post;
+                });
                 watcher.abort();
             });
         });
@@ -583,7 +588,8 @@ describe('Wordpress', function () {
             getBlogWatcher('bar', {
                 option_keys: [ 'pinterest' ]
             }, function (err, watcher) {
-                var key, previous, current;
+                var key, previous, current
+                  , updated_metadata;
                 watcher.on('blog', function (posts, metadata) {
                     assert.equal(metadata.pinterest, 'bacon');
                     db.query(function () {/*
@@ -600,15 +606,20 @@ describe('Wordpress', function () {
                                 assert.equal(previous, 'bacon');
                                 assert.equal(current, 'foobar');
                                 assert.equal(metadata.pinterest, 'foobar');
+                                assert(updated_metadata);
+                                assert.equal(updated_metadata.pinterest, 'foobar');
                                 done();
                             }, 100);
                         });
                     });
                 });
-                watcher.on('updated_metadata', function (key_, previous_, current_) {
+                watcher.on('updated_metadata_key', function (key_, previous_, current_) {
                     key = key_;
                     previous = previous_;
                     current = current_;
+                });
+                watcher.on('updated_metadata', function (metadata) {
+                    updated_metadata = metadata;
                 });
                 watcher.abort();
             });
@@ -618,7 +629,7 @@ describe('Wordpress', function () {
             getBlogWatcher('bar', {
                 option_keys: [ 'pinterest' ]
             }, function (err, watcher) {
-                var updated_terms = null;
+                var updated_terms, updated_metadata;
                 watcher.on('blog', function (posts, metadata) {
                     assert.deepEqual(Object.keys(metadata.terms), [ '1', '2', '3',
                         '4', '5', '6', '7', '10' ]);
@@ -641,6 +652,8 @@ describe('Wordpress', function () {
                                 assert.equal(metadata.terms['100'].slug, 'foo');
                                 assert.equal(metadata.terms['100'].parent.name, metadata.terms['6'].name);
                                 assert.equal(metadata.terms['6'].children[0], metadata.terms['100']);
+                                assert(updated_metadata);
+                                assert.equal(updated_metadata.terms['100'].name, 'Foo');
                                 done();
                             }, 100);
                         });
@@ -648,6 +661,9 @@ describe('Wordpress', function () {
                 });
                 watcher.on('updated_terms', function (terms) {
                     updated_terms = terms;
+                });
+                watcher.on('updated_metadata', function (metadata) {
+                    updated_metadata = metadata;
                 });
                 watcher.abort();
             });
