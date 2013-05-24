@@ -85,7 +85,7 @@ describe('Wordpress', function () {
                     if (err) return done(err);
                     assert.equal(typeof metadata, 'object');
                     assert.equal(metadata.twitter, 'bacon');
-                    assert.equal(Object.keys(metadata).length, 123);
+                    assert.equal(Object.keys(metadata).length, 119);
                     done();
                 });
             });
