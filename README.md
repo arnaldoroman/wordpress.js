@@ -46,7 +46,7 @@ The `Watcher` class can be used to detect changes to the blog, such as new posts
 ```javascript
 var watcher = new wordpress.Watcher(blog);
 
-watcher.on('blog', function (posts, metadata) {
+watcher.on('load', function (posts, metadata) {
     //...
 });
 
@@ -57,13 +57,13 @@ watcher.on('new_post', function (post) {
 
 The following events are available to listeners
 
-- **error** - when any sort of error occurs - receives (err)
-- **blog** - called once when the blog is loaded - receives (posts, metadata)
+- **load** - called once when the blog is loaded - receives (posts, metadata)
 - **new_post** - when a new post is published - receives (post)
 - **updated_post** - when a published post is modified - receives (post)
 - **removed_post** - when a published post is removed - receives (post)
 - **updated_terms** - when the category/tag tree changes - receives (terms)
 - **updated_metadata** - when a metadata key changes - receives (key, previous, current)
+- **error** - when any sort of error occurs - receives (err)
 
 ## Custom types
 

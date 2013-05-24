@@ -351,7 +351,7 @@ describe('Wordpress', function () {
               , option_keys: [ 'pinterest' ]
             }, function (err, watcher) {
                 if (err) return done(err);
-                watcher.on('blog', function (posts, metadata) {
+                watcher.on('load', function (posts, metadata) {
                     assert.equal(typeof metadata, 'object');
                     assert.equal(Object.keys(metadata).length, 1);
                     assert.equal(metadata.pinterest, 'bacon');
@@ -394,7 +394,7 @@ describe('Wordpress', function () {
                   , option_keys: [ 'pinterest' ]
                 }, function (err, watcher) {
                     var new_post = null;
-                    watcher.on('blog', function (posts) {
+                    watcher.on('load', function (posts) {
                         assert.equal(posts.length, 2);
                         db.query(function () {/*
                             UPDATE wp_3_posts
@@ -429,7 +429,7 @@ describe('Wordpress', function () {
               , option_keys: [ 'pinterest' ]
             }, function (err, watcher) {
                 var updated_post = null;
-                watcher.on('blog', function (posts) {
+                watcher.on('load', function (posts) {
                     assert.equal(posts.length, 3);
                     db.query(function () {/*
                         UPDATE wp_3_posts
@@ -463,7 +463,7 @@ describe('Wordpress', function () {
               , option_keys: [ 'pinterest' ]
             }, function (err, watcher) {
                 var removed_post = null;
-                watcher.on('blog', function (posts) {
+                watcher.on('load', function (posts) {
                     assert.equal(posts.length, 3);
                     db.query(function () {/*
                         UPDATE wp_3_posts
@@ -501,7 +501,7 @@ describe('Wordpress', function () {
                   , option_keys: [ 'pinterest' ]
                 }, function (err, watcher) {
                     var new_post = null;
-                    watcher.on('blog', function (posts) {
+                    watcher.on('load', function (posts) {
                         assert.equal(posts.length, 2);
                         db.query(function () {/*
                             UPDATE wp_3_posts
@@ -536,7 +536,7 @@ describe('Wordpress', function () {
                 var removed_post = null
                   , new_post = null
                   , scheduled_post = null;
-                watcher.on('blog', function (posts) {
+                watcher.on('load', function (posts) {
                     assert.equal(posts.length, 3);
                     db.query(function () {/*
                         UPDATE wp_3_posts
@@ -590,7 +590,7 @@ describe('Wordpress', function () {
             }, function (err, watcher) {
                 var key, previous, current
                   , updated_metadata;
-                watcher.on('blog', function (posts, metadata) {
+                watcher.on('load', function (posts, metadata) {
                     assert.equal(metadata.pinterest, 'bacon');
                     db.query(function () {/*
                         UPDATE wp_3_options
@@ -630,7 +630,7 @@ describe('Wordpress', function () {
                 option_keys: [ 'pinterest' ]
             }, function (err, watcher) {
                 var updated_terms, updated_metadata;
-                watcher.on('blog', function (posts, metadata) {
+                watcher.on('load', function (posts, metadata) {
                     assert.deepEqual(Object.keys(metadata.terms), [ '1', '2', '3',
                         '4', '5', '6', '7', '10' ]);
                     db.query(function () {/*
@@ -675,7 +675,7 @@ describe('Wordpress', function () {
               , option_keys: [ 'pinterest' ]
             }, function (err, watcher) {
                 var updated_post = null;
-                watcher.on('blog', function (posts) {
+                watcher.on('load', function (posts) {
                     assert.equal(posts.length, 3);
                     var post = posts[2];
                     assert.equal(post.id, '3');
