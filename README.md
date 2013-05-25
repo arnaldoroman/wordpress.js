@@ -61,8 +61,10 @@ The following events are available to listeners
 - **new_post** - when a new post is published - receives (post)
 - **updated_post** - when a published post is modified - receives (post)
 - **removed_post** - when a published post is removed - receives (post)
+- **scheduled_post** - when a post has been scheduled - receives (post_id)
 - **updated_terms** - when the category/tag tree changes - receives (terms)
-- **updated_metadata** - when a metadata key changes - receives (key, previous, current)
+- **updated_metadata** - when the metadata changes - receives (,etadata)
+- **updated_metadata_key** - when a metadata key changes - receives (key, previous, current)
 - **error** - when any sort of error occurs - receives (err)
 
 ## Custom types
