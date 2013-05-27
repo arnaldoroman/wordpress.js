@@ -341,6 +341,40 @@ describe('Wordpress', function () {
             });
         });
 
+        it('should generate an archive index', function (done) {
+            getBlog('foo', {
+                postmeta_keys: [ 'orientation' ]
+              , option_keys: [ 'pinterest' ]
+            }, function (err, foo) {
+                if (err) return done(err);
+                foo.load(function (err, posts, metadata) {
+                    assert.deepEqual(metadata.archive, [
+                        { year: 2011, months: [ { month: '11', count: 1 } ] }
+                      , { year: 2010, months: [ { month: '04', count: 1 } ] }
+                      , { year: 2009, months: [ { month: '08', count: 1 } ] }
+                    ]);
+                    done();
+                });
+            });
+        });
+
+        it('should generate an archive index', function (done) {
+            getBlog('bar', {
+                postmeta_keys: [ 'orientation' ]
+              , option_keys: [ 'pinterest' ]
+            }, function (err, foo) {
+                if (err) return done(err);
+                foo.load(function (err, posts, metadata) {
+                    assert.deepEqual(metadata.archive, [
+                        { year: 2012, months: [
+                            { month: '11', count: 1 }, { month: '02', count: 1 } ] }
+                      , { year: 2011, months: [ { month: '07', count: 1 } ] }
+                    ]);
+                    done();
+                });
+            });
+        });
+
     });
 
     describe('Watcher', function () {

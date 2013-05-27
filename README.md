@@ -37,7 +37,7 @@ blog.load(function (err, posts, metadata) {
 
 The `posts` array contains published posts, sorted by date descending. Each post object contains `id`, `title`, `content`, `excerpt`, `date`, `modified`, `slug`, `image`, `tags`, `categories`.
 
-The `metadata` object contains key/value pairs from the options table and `metadata.terms` contains the entire category/tag tree.
+The `metadata` object contains key/value pairs from the options table. The `metadata.terms` object contains the entire category/tag tree, while the `metadata.archive` array contains an index of post year/month combinations.
 
 ## Live updates
 
