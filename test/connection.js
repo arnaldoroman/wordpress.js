@@ -1,5 +1,7 @@
+var lib_dir = process.env.JS_COV ? '../lib-cov/': '../lib/';
+
 var assert = require('assert')
-  , Connection = require('../lib/connection').Connection;
+  , Connection = require(lib_dir + 'connection').Connection;
 
 describe('Connection', function () {
 

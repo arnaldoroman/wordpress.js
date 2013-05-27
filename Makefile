@@ -36,4 +36,16 @@ check-deps:
 		npm install -d; \
 	fi
 
+coverage: lib-cov
+	@JS_COV=1 ./node_modules/mocha/bin/mocha \
+		--reporter html-cov > coverage.html
+	@rm -rf *-cov
+	@open coverage.html
+
+lib-cov:
+	@which jscoverage &> /dev/null || \
+		(echo "jscoverage is required - see the README" && exit 1);
+	@rm -rf lib-cov
+	@jscoverage lib lib-cov
+
 .PHONY: check dependencies lint
