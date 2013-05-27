@@ -1,29 +1,7 @@
 var assert = require('assert')
   , utils = require('../lib/wordpress');
 
-/*jshint -W015 */
-
 describe('Utilities', function () {
-
-    it('should create multiline strings', function () {
-        var str = utils.multiline(function () {/*
-            SELECT * FROM foo
-        */});
-        assert.equal(str, 'SELECT * FROM foo');
-        str = utils.multiline(function () {/*
-            SELECT *
-            FROM foo
-        */});
-        assert.equal(str, 'SELECT * FROM foo');
-    });
-
-    it('should fail on invalid multiline strings', function () {
-        assert.throws(function () {
-            utils.multiline(function () {
-                /* SELECT * FROM foo */
-            });
-        });
-    });
 
     it('should copy objects', function () {
         var original = { a: 'b' };

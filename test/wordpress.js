@@ -1,5 +1,3 @@
-/*jshint -W015 */
-
 var assert = require('assert')
   , wordpress = require('../lib/wordpress')
   , inherits = require('util').inherits
@@ -416,12 +414,12 @@ describe('Wordpress', function () {
         });
 
         it('should pick up new posts', function (done) {
-            db.query(function () {/*
-                UPDATE wp_3_posts
-                SET post_status = "draft",
-                    post_modified_gmt = NOW()
-                WHERE ID = 3
-            */}, function (err) {
+            db.query(
+                'UPDATE wp_3_posts ' +
+                'SET post_status = "draft", ' +
+                '    post_modified_gmt = NOW() ' +
+                'WHERE ID = 3'
+            , function (err) {
                 if (err) return done(err);
                 getBlogWatcher('bar', {
                     postmeta_keys: [ 'orientation' ]
@@ -430,12 +428,12 @@ describe('Wordpress', function () {
                     var new_post = null;
                     watcher.on('load', function (posts) {
                         assert.equal(posts.length, 2);
-                        db.query(function () {/*
-                            UPDATE wp_3_posts
-                            SET post_status = "publish",
-                                post_modified_gmt = NOW()
-                            WHERE ID = 3
-                        */}, function (err) {
+                        db.query(
+                            'UPDATE wp_3_posts ' +
+                            'SET post_status = "publish", ' +
+                            '    post_modified_gmt = NOW() ' +
+                            'WHERE ID = 3'
+                        , function (err) {
                             if (err) return done(err);
                             watcher.poll(function (err) {
                                 if (err) return done(err);
@@ -465,12 +463,12 @@ describe('Wordpress', function () {
                 var updated_post = null;
                 watcher.on('load', function (posts) {
                     assert.equal(posts.length, 3);
-                    db.query(function () {/*
-                        UPDATE wp_3_posts
-                        SET post_content = "foo",
-                            post_modified_gmt = NOW()
-                        WHERE ID = 3
-                    */}, function (err) {
+                    db.query(
+                        'UPDATE wp_3_posts ' +
+                        'SET post_content = "foo", ' +
+                        '    post_modified_gmt = NOW() ' +
+                        'WHERE ID = 3'
+                    , function (err) {
                         if (err) return done(err);
                         watcher.poll(function (err) {
                             if (err) return done(err);
@@ -499,12 +497,12 @@ describe('Wordpress', function () {
                 var removed_post = null;
                 watcher.on('load', function (posts) {
                     assert.equal(posts.length, 3);
-                    db.query(function () {/*
-                        UPDATE wp_3_posts
-                        SET post_status = "draft",
-                            post_modified_gmt = NOW()
-                        WHERE ID = 3
-                    */}, function (err) {
+                    db.query(
+                        'UPDATE wp_3_posts ' +
+                        'SET post_status = "draft", ' +
+                        '    post_modified_gmt = NOW() ' +
+                        'WHERE ID = 3'
+                    , function (err) {
                         if (err) return done(err);
                         watcher.poll(function (err) {
                             if (err) return done(err);
@@ -524,11 +522,11 @@ describe('Wordpress', function () {
         });
 
         it('should pick up scheduled posts before initial load that are later published', function (done) {
-            db.query(function () {/*
-                UPDATE wp_3_posts
-                SET post_status = "future"
-                WHERE ID = 3
-            */}, function (err) {
+            db.query(
+                'UPDATE wp_3_posts ' +
+                'SET post_status = "future" ' +
+                'WHERE ID = 3'
+            , function (err) {
                 if (err) return done(err);
                 getBlogWatcher('bar', {
                     postmeta_keys: [ 'orientation' ]
@@ -537,11 +535,11 @@ describe('Wordpress', function () {
                     var new_post = null;
                     watcher.on('load', function (posts) {
                         assert.equal(posts.length, 2);
-                        db.query(function () {/*
-                            UPDATE wp_3_posts
-                            SET post_status = "publish"
-                            WHERE ID = 3
-                        */}, function (err) {
+                        db.query(
+                            'UPDATE wp_3_posts ' +
+                            'SET post_status = "publish" ' +
+                            'WHERE ID = 3'
+                        , function (err) {
                             if (err) return done(err);
                             watcher.poll(function (err) {
                                 if (err) return done(err);
@@ -572,12 +570,12 @@ describe('Wordpress', function () {
                   , scheduled_post = null;
                 watcher.on('load', function (posts) {
                     assert.equal(posts.length, 3);
-                    db.query(function () {/*
-                        UPDATE wp_3_posts
-                        SET post_status = "future",
-                            post_modified_gmt = NOW()
-                        WHERE ID = 3
-                    */}, function (err) {
+                    db.query(
+                        'UPDATE wp_3_posts ' +
+                        'SET post_status = "future", ' +
+                        '    post_modified_gmt = NOW() ' +
+                        'WHERE ID = 3'
+                    , function (err) {
                         if (err) return done(err);
                         watcher.poll(function (err) {
                             if (err) return done(err);
@@ -585,11 +583,11 @@ describe('Wordpress', function () {
                                 assert(removed_post);
                                 assert.equal(removed_post.id, '3');
                                 assert.equal(scheduled_post, '3');
-                                db.query(function () {/*
-                                    UPDATE wp_3_posts
-                                    SET post_status = "publish"
-                                    WHERE ID = 3
-                                */}, function (err) {
+                                db.query(
+                                    'UPDATE wp_3_posts ' +
+                                    'SET post_status = "publish" ' +
+                                    'WHERE ID = 3'
+                                , function (err) {
                                     if (err) return done(err);
                                     watcher.poll(function (err) {
                                         if (err) return done(err);
@@ -626,11 +624,11 @@ describe('Wordpress', function () {
                   , updated_metadata;
                 watcher.on('load', function (posts, metadata) {
                     assert.equal(metadata.pinterest, 'bacon');
-                    db.query(function () {/*
-                        UPDATE wp_3_options
-                        SET option_value = "foobar"
-                        WHERE option_name = "pinterest"
-                    */}, function (err) {
+                    db.query(
+                        'UPDATE wp_3_options ' +
+                        'SET option_value = "foobar" ' +
+                        'WHERE option_name = "pinterest" '
+                    , function (err) {
                         if (err) return done(err);
                         watcher.poll(function (err) {
                             if (err) return done(err);
@@ -667,10 +665,10 @@ describe('Wordpress', function () {
                 watcher.on('load', function (posts, metadata) {
                     assert.deepEqual(Object.keys(metadata.terms), [ '1', '2', '3',
                         '4', '5', '6', '7', '10' ]);
-                    db.query(function () {/*
-                        INSERT INTO wp_3_terms VALUES (100, 'Foo', 'foo', 0);
-                        INSERT INTO wp_3_term_taxonomy VALUES (100, 100, 'category', '', 6, 0)
-                    */}, function (err) {
+                    db.query(
+                        'INSERT INTO wp_3_terms VALUES (100, "Foo", "foo", 0); ' +
+                        'INSERT INTO wp_3_term_taxonomy VALUES (100, 100, "category", "", 6, 0) '
+                    , function (err) {
                         if (err) return done(err);
                         watcher.poll(function (err) {
                             if (err) return done(err);
@@ -716,12 +714,12 @@ describe('Wordpress', function () {
                     assert.deepEqual(post.categories.map(function (cat) {
                         return cat.name;
                     }), [ 'Advertorial', 'Travel' ]);
-                    db.query(function () {/*
-                        UPDATE wp_3_posts
-                        SET post_modified_gmt = NOW()
-                        WHERE ID = 3;
-                        INSERT INTO wp_3_term_relationships VALUES (3,6,0)
-                    */}, function (err) {
+                    db.query(
+                        'UPDATE wp_3_posts ' +
+                        'SET post_modified_gmt = NOW() ' +
+                        'WHERE ID = 3; ' +
+                        'INSERT INTO wp_3_term_relationships VALUES (3,6,0) '
+                    , function (err) {
                         if (err) return done(err);
                         watcher.poll(function (err) {
                             if (err) return done(err);
@@ -763,6 +761,4 @@ describe('Wordpress', function () {
     });
 
 });
-
-/*jshint +W015 */
 
