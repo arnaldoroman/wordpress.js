@@ -711,6 +711,23 @@ describe('Wordpress', function () {
 
     });
 
+    describe('Category', function () {
+
+        it('should match category slugs against a category and its parents', function () {
+            var category = new wordpress.Category(0, 'Foo', 'foo')
+              , subcategory = new wordpress.Category(1, 'Bar', 'bar', category)
+              , subsubcategory = new wordpress.Category(2, 'Baz', 'baz', subcategory);
+            assert(category.match('foo'));
+            assert(!category.match('bar'));
+            assert(subcategory.match('foo'));
+            assert(subsubcategory.match('baz'));
+            assert(subsubcategory.match('bar'));
+            assert(subsubcategory.match('foo'));
+            assert(!subsubcategory.match('foobar'));
+        });
+
+    });
+
 });
 
 /*jshint +W015 */
