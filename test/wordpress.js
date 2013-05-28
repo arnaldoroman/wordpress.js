@@ -17,7 +17,7 @@ function getBlog(name, options, callback) {
     multisite.getBlogs(function (err, blogs) {
         if (err) return callback(err);
         for (var i = 0; i < blogs.length; i++) {
-            if (blogs[i].name === name) {
+            if (blogs[i].multisite.name === name) {
                 return callback(null, blogs[i]);
             }
         }
@@ -52,12 +52,12 @@ describe('Wordpress', function () {
                 if (err) return done(err);
                 assert(Array.isArray(blogs));
                 assert.equal(blogs.length, 2);
-                assert.equal(blogs[0].id, 2);
-                assert.equal(blogs[0].name, 'foo');
-                assert.equal(blogs[0].public, true);
-                assert.equal(blogs[1].id, 3);
-                assert.equal(blogs[1].name, 'bar');
-                assert.equal(blogs[1].public, true);
+                assert.equal(blogs[0].multisite.id, 2);
+                assert.equal(blogs[0].multisite.name, 'foo');
+                assert.equal(blogs[0].multisite.public, true);
+                assert.equal(blogs[1].multisite.id, 3);
+                assert.equal(blogs[1].multisite.name, 'bar');
+                assert.equal(blogs[1].multisite.public, true);
                 done();
             });
         });
@@ -68,8 +68,8 @@ describe('Wordpress', function () {
                 if (err) return done(err);
                 assert(Array.isArray(blogs));
                 assert.equal(blogs.length, 2);
-                assert.equal(blogs[0].id, 2);
-                assert.equal(blogs[1].id, 3);
+                assert.equal(blogs[0].multisite.id, 2);
+                assert.equal(blogs[1].multisite.id, 3);
                 done();
             });
         });
@@ -649,6 +649,7 @@ describe('Wordpress', function () {
                                 assert.equal(metadata.pinterest, 'foobar');
                                 assert(updated_metadata);
                                 assert.equal(updated_metadata.pinterest, 'foobar');
+                                assert.equal(metadata.multisite.id, 3);
                                 done();
                             }, 100);
                         });
