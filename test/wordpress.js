@@ -726,6 +726,70 @@ describe('Wordpress', function () {
             assert(!subsubcategory.match('foobar'));
         });
 
+        it('should sync terms', function () {
+            var foo = { id: '1', name: 'Foo', slug: 'foo' }
+              , bar = { id: '2', name: 'Bar', slug: 'bar', parent: foo }
+              , baz = { id: '3', name: 'Baz', slug: 'baz', children: [ foo ] }
+              , qux = { id: '4', name: 'Qux', slug: 'qux' };
+            var terms = {
+                '1': foo
+              , '2': bar
+              , '4': qux
+            };
+            var metadata = new wordpress.Metadata(null, terms);
+            assert.deepEqual(metadata.terms, terms);
+            assert(metadata.syncTerms({
+                '1': { id: '1', name: 'ooF', slug: 'oof' }
+              , '2': bar
+              , '3': baz
+            }));
+            assert.deepEqual(Object.keys(metadata.terms), [ '1', '2', '3' ]);
+            assert.equal(metadata.terms['1'].name, 'ooF');
+            assert.equal(metadata.terms['1'].slug, 'oof');
+            assert.equal(metadata.terms['2'].parent.name, 'ooF');
+            assert.equal(metadata.terms['2'].parent.slug, 'oof');
+            assert.equal(metadata.terms['3'].children[0].name, 'ooF');
+            assert.equal(metadata.terms['3'].children[0].slug, 'oof');
+            assert.equal(foo.name, 'ooF');
+            assert.equal(foo.slug, 'oof');
+            assert(!metadata.syncTerms({
+                '1': { id: '1', name: 'ooF', slug: 'oof' }
+              , '2': bar
+              , '3': baz
+            }));
+            assert(metadata.syncTerms({
+                '1': foo
+              , '2': bar
+              , '3': { id: '3', name: 'Baz', slug: 'baz', children: [ bar ]  }
+            }));
+            assert.equal(metadata.terms['3'].children[0].name, 'Bar');
+            assert.equal(metadata.terms['3'].children[0].slug, 'bar');
+            assert.equal(baz.children[0].name, 'Bar');
+            assert.equal(baz.children[0].slug, 'bar');
+            assert(metadata.syncTerms({
+                '1': foo
+              , '2': bar
+              , '3': { id: '3', name: 'Baz', slug: 'baz' }
+            }));
+            assert(!metadata.terms['3'].children);
+            qux.parent = { id: '2' };
+            qux.children = [ { id: '1' } ];
+            assert(metadata.syncTerms({
+                '1': foo
+              , '2': bar
+              , '3': baz
+              , '4': qux
+            }));
+            assert.equal(metadata.terms['4'].children[0].name, 'ooF');
+            assert.equal(metadata.terms['4'].children[0].slug, 'oof');
+            assert.equal(metadata.terms['4'].parent.name, 'Bar');
+            assert.equal(metadata.terms['4'].parent.slug, 'bar');
+            assert.equal(qux.children[0].name, 'ooF');
+            assert.equal(qux.children[0].slug, 'oof');
+            assert.equal(qux.parent.name, 'Bar');
+            assert.equal(qux.parent.slug, 'bar');
+        });
+
     });
 
     describe('Archive', function () {
