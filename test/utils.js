@@ -26,5 +26,51 @@ describe('Utilities', function () {
         assert.equal(utils.excerpt('foo [caption bla]<img src="foo.jpg">[/caption] bar', 11), 'foo bar');
     });
 
+    it('should execute functions in parallel', function (done) {
+        utils.parallel([], function (err) {
+            if (err) return done(err);
+            utils.parallel([
+                function (callback) {
+                    callback('foo');
+                }
+              , function (callback) {
+                    callback('bar');
+                }
+            ], function (err) {
+                assert(err);
+                done();
+            });
+        });
+    });
+
+    it('should provide a safe setInterval wrapper', function (done) {
+        var calls = 1;
+        utils.setInterval(function (next) {
+            if (!--calls) {
+                done();
+            }
+            next();
+            next(); //Ignored
+        }, 10);
+    });
+
+    it('should provide a way for the setInterval function to be invoked immediately', function (done) {
+        var test = '';
+        utils.setInterval(function (next) {
+            test += 'foo';
+        }, 1000, true);
+        test += 'bar';
+        assert.equal(test, 'foobar');
+        test = '';
+        utils.setInterval(function (next) {
+            test += 'foo';
+        }, 10);
+        test += 'bar';
+        setTimeout(function () {
+            assert.equal(test, 'barfoo');
+            done();
+        }, 50);
+    });
+
 });
 

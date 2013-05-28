@@ -28,7 +28,7 @@ function getBlog(name, options, callback) {
 function getBlogWatcher(name, options, callback) {
     getBlog(name, options, function (err, blog) {
         if (err) return callback(err);
-        callback(null, new wordpress.Watcher(blog));
+        callback(null, new wordpress.Watcher(blog, options));
     });
 }
 
@@ -413,6 +413,47 @@ describe('Wordpress', function () {
                                     done();
                                 }, 100);
                             });
+                        });
+                    });
+                    watcher.on('new_post', function (post) {
+                        new_post = post;
+                    });
+                    watcher.abort();
+                });
+            });
+        });
+
+        it('should poll for changes periodically', function (done) {
+            db.query(
+                'UPDATE wp_3_posts ' +
+                'SET post_status = "draft", ' +
+                '    post_modified_gmt = NOW() ' +
+                'WHERE ID = 3'
+            , function (err) {
+                if (err) return done(err);
+                getBlogWatcher('bar', {
+                    postmeta_keys: [ 'orientation' ]
+                  , option_keys: [ 'pinterest' ]
+                  , interval: 50
+                }, function (err, watcher) {
+                    var new_post = null;
+                    watcher.on('load', function (posts) {
+                        assert.equal(posts.length, 2);
+                        db.query(
+                            'UPDATE wp_3_posts ' +
+                            'SET post_status = "publish", ' +
+                            '    post_modified_gmt = NOW() ' +
+                            'WHERE ID = 3'
+                        , function (err) {
+                            if (err) return done(err);
+                            watcher.start();
+                            setTimeout(function () {
+                                assert(new_post);
+                                assert.equal(new_post.id, '3');
+                                assert.equal(new_post.meta_orientation, 'top');
+                                watcher.abort();
+                                done();
+                            }, 100);
                         });
                     });
                     watcher.on('new_post', function (post) {
