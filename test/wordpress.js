@@ -341,40 +341,6 @@ describe('Wordpress', function () {
             });
         });
 
-        it('should generate an archive index', function (done) {
-            getBlog('foo', {
-                postmeta_keys: [ 'orientation' ]
-              , option_keys: [ 'pinterest' ]
-            }, function (err, foo) {
-                if (err) return done(err);
-                foo.load(function (err, posts, metadata) {
-                    assert.deepEqual(metadata.archive, [
-                        { year: 2011, months: [ { month: '11', count: 1 } ] }
-                      , { year: 2010, months: [ { month: '04', count: 1 } ] }
-                      , { year: 2009, months: [ { month: '08', count: 1 } ] }
-                    ]);
-                    done();
-                });
-            });
-        });
-
-        it('should generate an archive index', function (done) {
-            getBlog('bar', {
-                postmeta_keys: [ 'orientation' ]
-              , option_keys: [ 'pinterest' ]
-            }, function (err, foo) {
-                if (err) return done(err);
-                foo.load(function (err, posts, metadata) {
-                    assert.deepEqual(metadata.archive, [
-                        { year: 2012, months: [
-                            { month: '11', count: 1 }, { month: '02', count: 1 } ] }
-                      , { year: 2011, months: [ { month: '07', count: 1 } ] }
-                    ]);
-                    done();
-                });
-            });
-        });
-
     });
 
     describe('Watcher', function () {
@@ -758,6 +724,110 @@ describe('Wordpress', function () {
             assert(subsubcategory.match('bar'));
             assert(subsubcategory.match('foo'));
             assert(!subsubcategory.match('foobar'));
+        });
+
+    });
+
+    describe('Archive', function () {
+
+        it('should generate an archive index for a blog on load', function (done) {
+            getBlog('bar', {
+                postmeta_keys: [ 'orientation' ]
+              , option_keys: [ 'pinterest' ]
+            }, function (err, foo) {
+                if (err) return done(err);
+                foo.load(function (err, posts, metadata) {
+                    assert.deepEqual(metadata.archive, [
+                        { year: 2012, months: [
+                            { month: '11', count: 1 }, { month: '02', count: 1 } ] }
+                      , { year: 2011, months: [ { month: '07', count: 1 } ] }
+                    ]);
+                    done();
+                });
+            });
+        });
+
+        it('should sync an archive', function () {
+            var posts = [
+                { date: new Date('2011-10-10') }
+              , { date: new Date('2011-10-12') }
+              , { date: new Date('2011-12-12') }
+              , { date: new Date('2013-05-12') }
+                //Invalid dates are skipped:
+              , { date: new Date('invalid') }
+              , { date: new Date(0) }
+            ];
+            var archive = wordpress.Blog.prototype.generateArchive(posts)
+              , metadata = new wordpress.Metadata(null, null, archive);
+            var expected = [
+                { year: 2013, months: [ { month: '05', count: 1 } ] }
+              , { year: 2011, months: [ { month: '12', count: 1 }, { month: '10', count: 2 } ] }
+            ];
+            assert.deepEqual(metadata.archive, expected);
+
+            //Test adding and removing posts with invalid dates
+            assert(!metadata.addArchivePost({ date: new Date(0) }));
+            assert(!metadata.addArchivePost({ date: new Date('invalid') }));
+            assert.deepEqual(metadata.archive, expected);
+            assert(!metadata.removeArchivePost({ date: new Date(0) }));
+            assert(!metadata.removeArchivePost({ date: new Date('invalid') }));
+            assert.deepEqual(metadata.archive, expected);
+
+            //Test removing posts that aren't in sync with the archive
+            assert(!metadata.removeArchivePost({ date: new Date('2011-11-05') }));
+            assert(!metadata.removeArchivePost({ date: new Date('2012-09-05') }));
+            assert(!metadata.removeArchivePost({ date: new Date('2009-09-05') }));
+            assert.deepEqual(metadata.archive, expected);
+
+            //Test removing a post where the count is decremented
+            assert(!metadata.removeArchivePost({ date: new Date('2011-10-05') }));
+            expected[1].months[1].count = 1;
+            assert.deepEqual(metadata.archive, expected);
+
+            //Test removing a post where the year/month has to be removed
+            assert(metadata.removeArchivePost({ date: new Date('2011-10-05') }));
+            var removed = expected[1].months.splice(1, 1);
+            assert.deepEqual(metadata.archive, expected);
+
+            //Test adding a post where the year/month has to be added
+            assert(metadata.addArchivePost({ date: new Date('2011-10-05') }));
+            expected[1].months.push(removed.shift());
+            assert.deepEqual(metadata.archive, expected);
+
+            //Test adding a post where the count is incremented
+            assert(!metadata.addArchivePost({ date: new Date('2011-10-05') }));
+            expected[1].months[1].count = 2;
+            assert.deepEqual(metadata.archive, expected);
+
+            //Test adding a post where a year/month is to be inserted in the middle
+            assert(metadata.addArchivePost({ date: new Date('2012-10-05') }));
+            expected.splice(1, 0, { year: 2012, months: [ { month: '10', count: 1 } ] });
+            assert.deepEqual(metadata.archive, expected);
+
+            //Test adding a post where a year/month is to be inserted at the end
+            assert(metadata.addArchivePost({ date: new Date('2009-10-05') }));
+            expected.push({ year: 2009, months: [ { month: '10', count: 1 } ] });
+            assert.deepEqual(metadata.archive, expected);
+
+            //Test adding a post where a year/month is to be inserted at the start
+            assert(metadata.addArchivePost({ date: new Date('2014-10-05') }));
+            expected.splice(0, 0, { year: 2014, months: [ { month: '10', count: 1 } ] });
+            assert.deepEqual(metadata.archive, expected);
+
+            //Test adding a post where a month has to be added at the end
+            assert(metadata.addArchivePost({ date: new Date('2014-05-05') }));
+            expected[0].months.push({ month: '05', count: 1 });
+            assert.deepEqual(metadata.archive, expected);
+
+            //Test adding a post where a month has to be added at the start
+            assert(metadata.addArchivePost({ date: new Date('2014-12-05') }));
+            expected[0].months.unshift({ month: '12', count: 1 });
+            assert.deepEqual(metadata.archive, expected);
+
+            //Test adding a post where a month has to be added in the middle
+            assert(metadata.addArchivePost({ date: new Date('2014-07-05') }));
+            expected[0].months.splice(2, 0, { month: '07', count: 1 });
+            assert.deepEqual(metadata.archive, expected);
         });
 
     });
