@@ -168,7 +168,7 @@ describe('Wordpress', function () {
         it('should load posts', function (done) {
             getBlog('foo', function (err, foo) {
                 if (err) return done(err);
-                foo.loadPosts(function (err, posts) {
+                foo.loadPosts({ foo: 'bar' }, function (err, posts) {
                     if (err) return done(err);
                     assert(Array.isArray(posts));
                     assert.equal(posts.length, 3);
@@ -176,7 +176,8 @@ describe('Wordpress', function () {
                         assert(post instanceof wordpress.Post);
                         assert(post.date instanceof Date);
                         assert(post.modified instanceof Date);
-                        assert.equal(Object.keys(post).length, 8);
+                        assert.equal(Object.keys(post).length, 9);
+                        assert.equal(post.blog.foo, 'bar');
                     });
                     assert(posts[0].date > posts[1].date && posts[1].date > posts[2].date);
                     var post = posts[0];
@@ -199,7 +200,7 @@ describe('Wordpress', function () {
         it('should load post metadata when keys are specified', function (done) {
             getBlog('foo', function (err, foo) {
                 if (err) return done(err);
-                foo.loadPosts({ meta_keys: [ 'orientation', 'original_title' ] }, function (err, posts) {
+                foo.loadPosts({ foo: 'bar' }, { meta_keys: [ 'orientation', 'original_title' ] }, function (err, posts) {
                     if (err) return done(err);
                     assert(Array.isArray(posts));
                     assert.equal(posts.length, 3);
@@ -207,6 +208,7 @@ describe('Wordpress', function () {
                     assert.equal(post.id, '1');
                     assert.equal(post.orientation, 'top');
                     assert.equal(post.original_title, post.title);
+                    assert.equal(post.blog.foo, 'bar');
                     done();
                 });
             });
@@ -215,11 +217,12 @@ describe('Wordpress', function () {
         it('should load a post by ID', function (done) {
             getBlog('foo', function (err, foo) {
                 if (err) return done(err);
-                foo.loadPost(1, function (err, post) {
+                foo.loadPost(1, { foo: 'bar' }, function (err, post) {
                     if (err) return done(err);
                     assert.equal(typeof post, 'object');
                     assert.equal(post.id, '1');
                     assert.equal(post.slug, '/2011/11/bacon-ipsum');
+                    assert.equal(post.blog.foo, 'bar');
                     done();
                 });
             });
@@ -228,12 +231,13 @@ describe('Wordpress', function () {
         it('should load a post by ID with metadata', function (done) {
             getBlog('foo', function (err, foo) {
                 if (err) return done(err);
-                foo.loadPost(1, { meta_keys: [ 'orientation' ] }, function (err, post) {
+                foo.loadPost(1, { foo: 'bar' }, { meta_keys: [ 'orientation' ] }, function (err, post) {
                     if (err) return done(err);
                     assert.equal(typeof post, 'object');
                     assert.equal(post.id, '1');
                     assert.equal(post.slug, '/2011/11/bacon-ipsum');
                     assert.equal(post.orientation, 'top');
+                    assert.equal(post.blog.foo, 'bar');
                     done();
                 });
             });
@@ -242,7 +246,7 @@ describe('Wordpress', function () {
         it('should generate an excerpt from the content', function (done) {
             getBlog('foo', function (err, foo) {
                 if (err) return done(err);
-                foo.loadPost(3, function (err, post) {
+                foo.loadPost(3, {}, function (err, post) {
                     if (err) return done(err);
                     assert.equal(post.excerpt, 'Shankle brisket pancetta leberkas. ' +
                         'Bresaola sirloin pork chop ribeye beef ham...');
@@ -256,7 +260,7 @@ describe('Wordpress', function () {
         it('should return null when a post doesn\'t exist', function (done) {
             getBlog('foo', function (err, foo) {
                 if (err) return done(err);
-                foo.loadPost(9999, function (err, post) {
+                foo.loadPost(9999, {}, function (err, post) {
                     if (err) return done(err);
                     assert.equal(post, null);
                     done();
@@ -271,12 +275,13 @@ describe('Wordpress', function () {
             inherits(MyPost, wordpress.Post);
             getBlog('foo', { Post: MyPost }, function (err, foo) {
                 if (err) return done(err);
-                foo.loadPosts(function (err, posts) {
+                foo.loadPosts({ foo: 'bar' }, function (err, posts) {
                     if (err) return done(err);
                     assert.equal(posts.length, 3);
                     posts.forEach(function (post) {
                         assert(post instanceof MyPost);
                         assert(post instanceof wordpress.Post);
+                        assert(post.blog.foo, 'bar');
                     });
                     done();
                 });
@@ -643,7 +648,9 @@ describe('Wordpress', function () {
                 var key, previous, current
                   , updated_metadata;
                 watcher.on('load', function (posts, metadata) {
+                    var post = posts[0];
                     assert.equal(metadata.pinterest, 'bacon');
+                    assert.equal(post.blog.pinterest, 'bacon');
                     db.query(
                         'UPDATE wp_3_options ' +
                         'SET option_value = "foobar" ' +
@@ -660,6 +667,7 @@ describe('Wordpress', function () {
                                 assert.equal(metadata.pinterest, 'foobar');
                                 assert(updated_metadata);
                                 assert.equal(updated_metadata.pinterest, 'foobar');
+                                assert.equal(post.blog.pinterest, 'foobar');
                                 assert.equal(metadata.options.id, 3);
                                 done();
                             }, 100);
@@ -931,8 +939,8 @@ describe('Wordpress', function () {
               , { date: new Date('invalid') }
               , { date: new Date(0) }
             ];
-            var archive = wordpress.Blog.prototype.generateArchive(posts)
-              , metadata = new wordpress.Metadata(null, null, archive);
+            var metadata = new wordpress.Metadata();
+            metadata.generateArchive(posts);
             var expected = [
                 { year: 2013, months: [ { month: '05', count: 1 } ] }
               , { year: 2011, months: [ { month: '12', count: 1 }, { month: '10', count: 2 } ] }
