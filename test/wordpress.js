@@ -336,6 +336,15 @@ describe('Wordpress', function () {
                     assert(Object.keys(metadata.terms).length, 11);
                     assert(metadata.terms['3'] instanceof wordpress.Category);
                     assert(metadata.terms['7'] instanceof wordpress.Tag);
+                    assert(Array.isArray(metadata.categories));
+                    assert(Array.isArray(metadata.tags));
+                    assert.equal(Object.keys(metadata.term_slugs).length, 11);
+                    assert.equal(typeof metadata.term_slugs, 'object');
+                    assert.equal(metadata.categories.length, 8);
+                    assert.equal(metadata.tags.length, 3);
+                    assert.equal(metadata.categories[0].slug, 'uncategorized');
+                    assert.equal(metadata.tags[0].slug, 'radical');
+                    assert.equal(metadata.term_slugs['uncategorized'].name, 'Uncategorized');
                     done();
                 });
             });
@@ -785,10 +794,10 @@ describe('Wordpress', function () {
         });
 
         it('should sync terms', function () {
-            var foo = { id: '1', name: 'Foo', slug: 'foo' }
-              , bar = { id: '2', name: 'Bar', slug: 'bar', parent: foo }
-              , baz = { id: '3', name: 'Baz', slug: 'baz', children: [ foo ] }
-              , qux = { id: '4', name: 'Qux', slug: 'qux' };
+            var foo = new wordpress.Category('1', 'Foo', 'foo')
+              , bar = new wordpress.Category('2', 'Bar', 'bar', foo)
+              , baz = new wordpress.Category('3', 'Baz', 'baz', null, [ foo ])
+              , qux = new wordpress.Category('4', 'Qux', 'qux');
             var terms = {
                 '1': foo
               , '2': bar
@@ -796,12 +805,15 @@ describe('Wordpress', function () {
             };
             var metadata = new wordpress.Metadata(null, terms);
             assert.deepEqual(metadata.terms, terms);
+            assert.deepEqual(Object.keys(metadata.term_slugs), [ 'foo', 'bar', 'qux' ]);
             assert(metadata.syncTerms({
                 '1': { id: '1', name: 'ooF', slug: 'oof' }
               , '2': bar
               , '3': baz
             }));
             assert.deepEqual(Object.keys(metadata.terms), [ '1', '2', '3' ]);
+            assert.deepEqual(Object.keys(metadata.term_slugs), [ 'bar', 'oof', 'baz' ]);
+            assert.equal(metadata.categories.length, 3);
             assert.equal(metadata.terms['1'].name, 'ooF');
             assert.equal(metadata.terms['1'].slug, 'oof');
             assert.equal(metadata.terms['2'].parent.name, 'ooF');
@@ -815,6 +827,7 @@ describe('Wordpress', function () {
               , '2': bar
               , '3': baz
             }));
+            assert.equal(metadata.categories.length, 3);
             assert(metadata.syncTerms({
                 '1': foo
               , '2': bar
@@ -838,6 +851,7 @@ describe('Wordpress', function () {
               , '3': baz
               , '4': qux
             }));
+            assert.equal(metadata.categories.length, 4);
             assert.equal(metadata.terms['4'].children[0].name, 'ooF');
             assert.equal(metadata.terms['4'].children[0].slug, 'oof');
             assert.equal(metadata.terms['4'].parent.name, 'Bar');
@@ -846,6 +860,41 @@ describe('Wordpress', function () {
             assert.equal(qux.children[0].slug, 'oof');
             assert.equal(qux.parent.name, 'Bar');
             assert.equal(qux.parent.slug, 'bar');
+            assert(metadata.syncTerms({
+                '1': foo
+              , '2': bar
+              , '3': baz
+              , '4': { id: '4', name: 'Qux', slug: 'qux', parent: { id: '3' } }
+            }));
+            assert.equal(qux.parent.name, 'Baz');
+            assert(metadata.syncTerms({
+                '1': foo
+              , '2': bar
+              , '3': baz
+              , '4': { id: '4', name: 'Qux', slug: 'qux' }
+            }));
+            assert(!qux.parent);
+            assert(metadata.syncTerms({
+                '1': foo
+              , '2': bar
+              , '3': baz
+              , '4': { id: '4', name: 'Qux', slug: 'qux', parent: { id: '1' } }
+            }));
+            assert.equal(qux.parent.name, 'ooF');
+            assert.equal(metadata.categories.length, 4);
+            assert(metadata.syncTerms({
+                '1': foo
+              , '2': bar
+              , '3': baz
+              , '4': qux
+              , '5': new wordpress.Tag('5', 'Yep', 'yep')
+            }));
+            assert.equal(metadata.categories.length, 4);
+            assert.equal(metadata.tags.length, 1);
+            assert(metadata.syncTerms({}));
+            assert.equal(metadata.categories.length, 0);
+            assert.equal(metadata.tags.length, 0);
+            assert.equal(Object.keys(metadata.term_slugs).length, 0);
         });
 
     });
