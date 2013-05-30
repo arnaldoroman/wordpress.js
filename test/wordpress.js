@@ -246,6 +246,8 @@ describe('Wordpress', function () {
                     if (err) return done(err);
                     assert.equal(post.excerpt, 'Shankle brisket pancetta leberkas. ' +
                         'Bresaola sirloin pork chop ribeye beef ham...');
+                    assert.equal(post.excerpt, 'Shankle brisket pancetta leberkas. ' +
+                        'Bresaola sirloin pork chop ribeye beef ham...');
                     done();
                 });
             });
