@@ -753,6 +753,22 @@ describe('Wordpress', function () {
 
     });
 
+    describe('Post', function () {
+
+        it('should use the first image in the post as a featured image if not specified', function () {
+            var post = Object.create(wordpress.Post.prototype);
+            post._content = 'Foo bar <img src="foo.jpg"><img src="bar.jpg">';
+            assert.equal(post.image, 'foo.jpg');
+            assert(post.fallback_image);
+            assert.equal(post.image, 'foo.jpg');
+            post = Object.create(wordpress.Post.prototype);
+            post._content = 'Foo bar';
+            assert.equal(post.image, null);
+            assert(post.fallback_image);
+        });
+
+    });
+
     describe('Category', function () {
 
         it('should match category slugs against a category and its parents', function () {
