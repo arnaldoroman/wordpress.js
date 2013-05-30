@@ -205,8 +205,8 @@ describe('Wordpress', function () {
                     assert.equal(posts.length, 3);
                     var post = posts[0];
                     assert.equal(post.id, '1');
-                    assert.equal(post.meta_orientation, 'top');
-                    assert.equal(post.meta_original_title, post.title);
+                    assert.equal(post.orientation, 'top');
+                    assert.equal(post.original_title, post.title);
                     done();
                 });
             });
@@ -233,7 +233,7 @@ describe('Wordpress', function () {
                     assert.equal(typeof post, 'object');
                     assert.equal(post.id, '1');
                     assert.equal(post.slug, '/2011/11/bacon-ipsum');
-                    assert.equal(post.meta_orientation, 'top');
+                    assert.equal(post.orientation, 'top');
                     done();
                 });
             });
@@ -325,7 +325,7 @@ describe('Wordpress', function () {
                     var post = posts[0];
                     assert.equal(post.id, '1');
                     assert.equal(post.title, 'Bacon ipsum');
-                    assert.equal(post.meta_orientation, 'top');
+                    assert.equal(post.orientation, 'top');
                     assert(Array.isArray(post.tags));
                     assert(Array.isArray(post.categories));
                     assert.equal(post.tags.length, 1);
@@ -372,7 +372,7 @@ describe('Wordpress', function () {
                     var post = posts[0];
                     assert.equal(post.id, '1');
                     assert.equal(post.title, 'Bacon ipsum');
-                    assert.equal(post.meta_orientation, 'top');
+                    assert.equal(post.orientation, 'top');
                     assert(Array.isArray(post.tags));
                     assert(Array.isArray(post.categories));
                     assert.equal(post.tags.length, 1);
@@ -419,7 +419,7 @@ describe('Wordpress', function () {
                                 setTimeout(function () {
                                     assert(new_post);
                                     assert.equal(new_post.id, '3');
-                                    assert.equal(new_post.meta_orientation, 'top');
+                                    assert.equal(new_post.orientation, 'top');
 
                                     done();
                                 }, 100);
@@ -461,7 +461,7 @@ describe('Wordpress', function () {
                             setTimeout(function () {
                                 assert(new_post);
                                 assert.equal(new_post.id, '3');
-                                assert.equal(new_post.meta_orientation, 'top');
+                                assert.equal(new_post.orientation, 'top');
                                 watcher.abort();
                                 done();
                             }, 100);
@@ -496,7 +496,7 @@ describe('Wordpress', function () {
                                 assert(updated_post);
                                 assert.equal(updated_post.id, '3');
                                 assert.equal(updated_post.content, 'foo');
-                                assert.equal(updated_post.meta_orientation, 'top');
+                                assert.equal(updated_post.orientation, 'top');
                                 done();
                             }, 100);
                         });
@@ -566,7 +566,7 @@ describe('Wordpress', function () {
                                 setTimeout(function () {
                                     assert(new_post);
                                     assert.equal(new_post.id, '3');
-                                    assert.equal(new_post.meta_orientation, 'top');
+                                    assert.equal(new_post.orientation, 'top');
                                     done();
                                 }, 100);
                             });
@@ -614,7 +614,7 @@ describe('Wordpress', function () {
                                         setTimeout(function () {
                                             assert(new_post);
                                             assert.equal(new_post.id, '3');
-                                            assert.equal(new_post.meta_orientation, 'top');
+                                            assert.equal(new_post.orientation, 'top');
                                             done();
                                         }, 100);
                                     });
