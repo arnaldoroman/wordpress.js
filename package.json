@@ -1,6 +1,6 @@
 {
   "name": "wordpress.js",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "",
   "main": "lib/wordpress.js",
   "scripts": {
