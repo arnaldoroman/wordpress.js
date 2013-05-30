@@ -910,7 +910,8 @@ describe('Wordpress', function () {
                 foo.load(function (err, posts, metadata) {
                     assert.deepEqual(metadata.archive, [
                         { year: 2012, months: [
-                            { month: '11', count: 1 }, { month: '02', count: 1 } ] }
+                            { month: '11', count: 1 }, { month: '02', count: 1 }
+                        ] }
                       , { year: 2011, months: [ { month: '07', count: 1 } ] }
                     ]);
                     done();

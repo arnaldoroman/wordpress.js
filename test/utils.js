@@ -56,13 +56,13 @@ describe('Utilities', function () {
 
     it('should provide a way for the setInterval function to be invoked immediately', function (done) {
         var test = '';
-        utils.setInterval(function (next) {
+        utils.setInterval(function () {
             test += 'foo';
         }, 1000, true);
         test += 'bar';
         assert.equal(test, 'foobar');
         test = '';
-        utils.setInterval(function (next) {
+        utils.setInterval(function () {
             test += 'foo';
         }, 10);
         test += 'bar';

@@ -15,7 +15,7 @@ dependencies:
 deps: dependencies
 
 lint:
-	@jshint lib
+	@jshint lib test
 
 check: check-config check-deps
 	@./node_modules/mocha/bin/mocha \
