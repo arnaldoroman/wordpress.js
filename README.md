@@ -83,6 +83,20 @@ var blog = new wordpress.Blog(connection, {
 
 See the [current types](https://github.com/sydneystockholm/wordpress.js/tree/master/lib) for more information.
 
+## Tests
+
+```bash
+$ make check
+```
+
+Test verbosity can be increased by using `V=1`, e.g. `V=1 make check`
+
+Code coverage analysis (requires [jscoverage](https://github.com/visionmedia/node-jscoverage)) can be run with
+
+```bash
+$ make coverage
+```
+
 ## License (MIT)
 
 Copyright (c) 2012 Sydney Stockholm <opensource@sydneystockholm.com>
