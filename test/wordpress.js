@@ -770,6 +770,34 @@ describe('Wordpress', function () {
             });
         });
 
+        it('should provide a way to load a single post', function (done) {
+            getBlogWatcher('foo', {
+                postmeta_keys: [ 'orientation' ]
+              , option_keys: [ 'pinterest' ]
+            }, function (err, watcher) {
+                if (err) return done(err);
+                watcher.abort();
+                watcher.loadPost(1, function (err, post) {
+                    if (err) return done(err);
+                    assert.equal(post.id, '1');
+                    assert.equal(post.title, 'Bacon ipsum');
+                    assert.equal(post.orientation, 'top');
+                    assert(Array.isArray(post.tags));
+                    assert(Array.isArray(post.categories));
+                    assert.equal(post.tags.length, 1);
+                    assert.equal(post.categories.length, 2);
+                    assert.equal(post.tags[0].name, 'Radical');
+                    assert.equal(post.categories[1].name, 'Shopping');
+                    assert(Array.isArray(post.categories[1].children));
+                    assert.equal(post.categories[1].children.length, 1);
+                    assert.equal(post.blog.pinterest, 'bacon');
+                    done();
+                });
+                watcher.on('error', done);
+                watcher.abort();
+            });
+        });
+
     });
 
     describe('Post', function () {
