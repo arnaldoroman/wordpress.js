@@ -8,6 +8,15 @@ var assert = require('assert')
 var config = require('../test_config.js')
   , db = new wordpress.Connection(config);
 
+function getLoader(name, options, callback) {
+    if (typeof options === 'function') {
+        callback = options;
+        options = {};
+    }
+    options.id = name === 'foo' ? 2 : 3;
+    callback(null, new wordpress.Loader(db, options));
+}
+
 function getBlog(name, options, callback) {
     if (typeof options === 'function') {
         callback = options;
@@ -22,13 +31,6 @@ function getBlog(name, options, callback) {
             }
         }
         callback(new Error('Blog not found'));
-    });
-}
-
-function getBlogWatcher(name, options, callback) {
-    getBlog(name, options, function (err, blog) {
-        if (err) return callback(err);
-        callback(null, new wordpress.Watcher(blog, options));
     });
 }
 
@@ -79,7 +81,7 @@ describe('Wordpress', function () {
     describe('Blog', function () {
 
         it('should load metadata', function (done) {
-            getBlog('foo', function (err, foo) {
+            getLoader('foo', function (err, foo) {
                 if (err) return done(err);
                 foo.loadMetadata(function (err, metadata) {
                     if (err) return done(err);
@@ -92,7 +94,7 @@ describe('Wordpress', function () {
         });
 
         it('should load metadata using a mask', function (done) {
-            getBlog('foo', function (err, foo) {
+            getLoader('foo', function (err, foo) {
                 if (err) return done(err);
                 foo.loadMetadata({ keys: [ 'twitter' ] }, function (err, metadata) {
                     if (err) return done(err);
@@ -105,7 +107,7 @@ describe('Wordpress', function () {
         });
 
         it('should load categories and tags', function (done) {
-            getBlog('foo', function (err, foo) {
+            getLoader('foo', function (err, foo) {
                 if (err) return done(err);
                 foo.loadTerms(function (err, terms) {
                     if (err) return done(err);
@@ -137,7 +139,7 @@ describe('Wordpress', function () {
         });
 
         it('should load post to term relationships', function (done) {
-            getBlog('foo', function (err, foo) {
+            getLoader('foo', function (err, foo) {
                 if (err) return done(err);
                 foo.loadTermRelationships(function (err, relationships) {
                     if (err) return done(err);
@@ -152,7 +154,7 @@ describe('Wordpress', function () {
         });
 
         it('should load post to term relationships using an ID mask', function (done) {
-            getBlog('foo', function (err, foo) {
+            getLoader('foo', function (err, foo) {
                 if (err) return done(err);
                 foo.loadTermRelationships([ 1, 2 ], function (err, relationships) {
                     if (err) return done(err);
@@ -166,7 +168,7 @@ describe('Wordpress', function () {
         });
 
         it('should load posts', function (done) {
-            getBlog('foo', function (err, foo) {
+            getLoader('foo', function (err, foo) {
                 if (err) return done(err);
                 foo.loadPosts({ foo: 'bar' }, function (err, posts) {
                     if (err) return done(err);
@@ -198,7 +200,7 @@ describe('Wordpress', function () {
         });
 
         it('should load post metadata when keys are specified', function (done) {
-            getBlog('foo', function (err, foo) {
+            getLoader('foo', function (err, foo) {
                 if (err) return done(err);
                 foo.loadPosts({ foo: 'bar' }, { meta_keys: [ 'orientation', 'original_title' ] }, function (err, posts) {
                     if (err) return done(err);
@@ -215,7 +217,7 @@ describe('Wordpress', function () {
         });
 
         it('should load a post by ID', function (done) {
-            getBlog('foo', function (err, foo) {
+            getLoader('foo', function (err, foo) {
                 if (err) return done(err);
                 foo.loadPost(1, { foo: 'bar' }, function (err, post) {
                     if (err) return done(err);
@@ -229,7 +231,7 @@ describe('Wordpress', function () {
         });
 
         it('should load a post by ID with metadata', function (done) {
-            getBlog('foo', function (err, foo) {
+            getLoader('foo', function (err, foo) {
                 if (err) return done(err);
                 foo.loadPost(1, { foo: 'bar' }, { meta_keys: [ 'orientation' ] }, function (err, post) {
                     if (err) return done(err);
@@ -244,7 +246,7 @@ describe('Wordpress', function () {
         });
 
         it('should generate an excerpt from the content', function (done) {
-            getBlog('foo', function (err, foo) {
+            getLoader('foo', function (err, foo) {
                 if (err) return done(err);
                 foo.loadPost(3, {}, function (err, post) {
                     if (err) return done(err);
@@ -258,7 +260,7 @@ describe('Wordpress', function () {
         });
 
         it('should return null when a post doesn\'t exist', function (done) {
-            getBlog('foo', function (err, foo) {
+            getLoader('foo', function (err, foo) {
                 if (err) return done(err);
                 foo.loadPost(9999, {}, function (err, post) {
                     if (err) return done(err);
@@ -273,7 +275,7 @@ describe('Wordpress', function () {
                 wordpress.Post.apply(this, arguments);
             }
             inherits(MyPost, wordpress.Post);
-            getBlog('foo', { Post: MyPost }, function (err, foo) {
+            getLoader('foo', { Post: MyPost }, function (err, foo) {
                 if (err) return done(err);
                 foo.loadPosts({ foo: 'bar' }, function (err, posts) {
                     if (err) return done(err);
@@ -297,7 +299,7 @@ describe('Wordpress', function () {
             }
             inherits(MyTag, wordpress.Tag);
             inherits(MyCategory, wordpress.Category);
-            getBlog('foo', {
+            getLoader('foo', {
                 Tag: MyTag
               , Category: MyCategory
             }, function (err, foo) {
@@ -314,7 +316,7 @@ describe('Wordpress', function () {
         });
 
         it('should load an entire blog', function (done) {
-            getBlog('foo', {
+            getLoader('foo', {
                 postmeta_keys: [ 'orientation' ]
               , option_keys: [ 'pinterest' ]
             }, function (err, foo) {
@@ -359,15 +361,15 @@ describe('Wordpress', function () {
 
     });
 
-    describe('Watcher', function () {
+    describe('blog', function () {
 
         it('should emit a blog event when load is complete', function (done) {
-            getBlogWatcher('foo', {
+            getBlog('foo', {
                 postmeta_keys: [ 'orientation' ]
               , option_keys: [ 'pinterest' ]
-            }, function (err, watcher) {
+            }, function (err, blog) {
                 if (err) return done(err);
-                watcher.on('load', function (posts, metadata) {
+                blog.on('load', function (posts, metadata) {
                     assert.equal(typeof metadata, 'object');
                     assert.equal(Object.keys(metadata).length, 1);
                     assert.equal(metadata.pinterest, 'bacon');
@@ -392,8 +394,8 @@ describe('Wordpress', function () {
                     assert(metadata.terms['7'] instanceof wordpress.Tag);
                     done();
                 });
-                watcher.on('error', done);
-                watcher.abort();
+                blog.on('error', done);
+                blog.abort();
             });
         });
 
@@ -405,12 +407,12 @@ describe('Wordpress', function () {
                 'WHERE ID = 3'
             , function (err) {
                 if (err) return done(err);
-                getBlogWatcher('bar', {
+                getBlog('bar', {
                     postmeta_keys: [ 'orientation' ]
                   , option_keys: [ 'pinterest' ]
-                }, function (err, watcher) {
+                }, function (err, blog) {
                     var new_post = null;
-                    watcher.on('load', function (posts) {
+                    blog.on('load', function (posts) {
                         assert.equal(posts.length, 2);
                         db.query(
                             'UPDATE wp_3_posts ' +
@@ -419,7 +421,7 @@ describe('Wordpress', function () {
                             'WHERE ID = 3'
                         , function (err) {
                             if (err) return done(err);
-                            watcher.poll(function (err) {
+                            blog.poll(function (err) {
                                 if (err) return done(err);
                                 setTimeout(function () {
                                     assert(new_post);
@@ -431,10 +433,10 @@ describe('Wordpress', function () {
                             });
                         });
                     });
-                    watcher.on('new_post', function (post) {
+                    blog.on('new_post', function (post) {
                         new_post = post;
                     });
-                    watcher.abort();
+                    blog.abort();
                 });
             });
         });
@@ -447,13 +449,13 @@ describe('Wordpress', function () {
                 'WHERE ID = 3'
             , function (err) {
                 if (err) return done(err);
-                getBlogWatcher('bar', {
+                getBlog('bar', {
                     postmeta_keys: [ 'orientation' ]
                   , option_keys: [ 'pinterest' ]
                   , interval: 50
-                }, function (err, watcher) {
+                }, function (err, blog) {
                     var new_post = null;
-                    watcher.on('load', function (posts) {
+                    blog.on('load', function (posts) {
                         assert.equal(posts.length, 2);
                         db.query(
                             'UPDATE wp_3_posts ' +
@@ -462,31 +464,31 @@ describe('Wordpress', function () {
                             'WHERE ID = 3'
                         , function (err) {
                             if (err) return done(err);
-                            watcher.start();
+                            blog.start();
                             setTimeout(function () {
                                 assert(new_post);
                                 assert.equal(new_post.id, '3');
                                 assert.equal(new_post.orientation, 'top');
-                                watcher.abort();
+                                blog.abort();
                                 done();
                             }, 100);
                         });
                     });
-                    watcher.on('new_post', function (post) {
+                    blog.on('new_post', function (post) {
                         new_post = post;
                     });
-                    watcher.abort();
+                    blog.abort();
                 });
             });
         });
 
         it('should pick up updated posts', function (done) {
-            getBlogWatcher('bar', {
+            getBlog('bar', {
                 postmeta_keys: [ 'orientation' ]
               , option_keys: [ 'pinterest' ]
-            }, function (err, watcher) {
+            }, function (err, blog) {
                 var updated_post = null;
-                watcher.on('load', function (posts) {
+                blog.on('load', function (posts) {
                     assert.equal(posts.length, 3);
                     db.query(
                         'UPDATE wp_3_posts ' +
@@ -495,7 +497,7 @@ describe('Wordpress', function () {
                         'WHERE ID = 3'
                     , function (err) {
                         if (err) return done(err);
-                        watcher.poll(function (err) {
+                        blog.poll(function (err) {
                             if (err) return done(err);
                             setTimeout(function () {
                                 assert(updated_post);
@@ -507,20 +509,20 @@ describe('Wordpress', function () {
                         });
                     });
                 });
-                watcher.on('updated_post', function (post) {
+                blog.on('updated_post', function (post) {
                     updated_post = post;
                 });
-                watcher.abort();
+                blog.abort();
             });
         });
 
         it('should remove posts that are drafted or trashed after publishing', function (done) {
-            getBlogWatcher('bar', {
+            getBlog('bar', {
                 postmeta_keys: [ 'orientation' ]
               , option_keys: [ 'pinterest' ]
-            }, function (err, watcher) {
+            }, function (err, blog) {
                 var removed_post = null;
-                watcher.on('load', function (posts) {
+                blog.on('load', function (posts) {
                     assert.equal(posts.length, 3);
                     db.query(
                         'UPDATE wp_3_posts ' +
@@ -529,7 +531,7 @@ describe('Wordpress', function () {
                         'WHERE ID = 3'
                     , function (err) {
                         if (err) return done(err);
-                        watcher.poll(function (err) {
+                        blog.poll(function (err) {
                             if (err) return done(err);
                             setTimeout(function () {
                                 assert(removed_post);
@@ -539,10 +541,10 @@ describe('Wordpress', function () {
                         });
                     });
                 });
-                watcher.on('removed_post', function (post) {
+                blog.on('removed_post', function (post) {
                     removed_post = post;
                 });
-                watcher.abort();
+                blog.abort();
             });
         });
 
@@ -553,12 +555,12 @@ describe('Wordpress', function () {
                 'WHERE ID = 3'
             , function (err) {
                 if (err) return done(err);
-                getBlogWatcher('bar', {
+                getBlog('bar', {
                     postmeta_keys: [ 'orientation' ]
                   , option_keys: [ 'pinterest' ]
-                }, function (err, watcher) {
+                }, function (err, blog) {
                     var new_post = null;
-                    watcher.on('load', function (posts) {
+                    blog.on('load', function (posts) {
                         assert.equal(posts.length, 2);
                         db.query(
                             'UPDATE wp_3_posts ' +
@@ -566,7 +568,7 @@ describe('Wordpress', function () {
                             'WHERE ID = 3'
                         , function (err) {
                             if (err) return done(err);
-                            watcher.poll(function (err) {
+                            blog.poll(function (err) {
                                 if (err) return done(err);
                                 setTimeout(function () {
                                     assert(new_post);
@@ -577,23 +579,23 @@ describe('Wordpress', function () {
                             });
                         });
                     });
-                    watcher.on('new_post', function (post) {
+                    blog.on('new_post', function (post) {
                         new_post = post;
                     });
-                    watcher.abort();
+                    blog.abort();
                 });
             });
         });
 
         it('should pick up scheduled posts after initial load that are later published', function (done) {
-            getBlogWatcher('bar', {
+            getBlog('bar', {
                 postmeta_keys: [ 'orientation' ]
               , option_keys: [ 'pinterest' ]
-            }, function (err, watcher) {
+            }, function (err, blog) {
                 var removed_post = null
                   , new_post = null
                   , scheduled_post = null;
-                watcher.on('load', function (posts) {
+                blog.on('load', function (posts) {
                     assert.equal(posts.length, 3);
                     db.query(
                         'UPDATE wp_3_posts ' +
@@ -602,7 +604,7 @@ describe('Wordpress', function () {
                         'WHERE ID = 3'
                     , function (err) {
                         if (err) return done(err);
-                        watcher.poll(function (err) {
+                        blog.poll(function (err) {
                             if (err) return done(err);
                             setTimeout(function () {
                                 assert(removed_post);
@@ -614,7 +616,7 @@ describe('Wordpress', function () {
                                     'WHERE ID = 3'
                                 , function (err) {
                                     if (err) return done(err);
-                                    watcher.poll(function (err) {
+                                    blog.poll(function (err) {
                                         if (err) return done(err);
                                         setTimeout(function () {
                                             assert(new_post);
@@ -628,26 +630,26 @@ describe('Wordpress', function () {
                         });
                     });
                 });
-                watcher.on('new_post', function (post) {
+                blog.on('new_post', function (post) {
                     new_post = post;
                 });
-                watcher.on('removed_post', function (post) {
+                blog.on('removed_post', function (post) {
                     removed_post = post;
                 });
-                watcher.on('scheduled_post', function (post) {
+                blog.on('scheduled_post', function (post) {
                     scheduled_post = post;
                 });
-                watcher.abort();
+                blog.abort();
             });
         });
 
         it('should detect changes to blog metadata', function (done) {
-            getBlogWatcher('bar', {
+            getBlog('bar', {
                 option_keys: [ 'pinterest' ]
-            }, function (err, watcher) {
+            }, function (err, blog) {
                 var key, previous, current
                   , updated_metadata;
-                watcher.on('load', function (posts, metadata) {
+                blog.on('load', function (posts, metadata) {
                     var post = posts[0];
                     assert.equal(metadata.pinterest, 'bacon');
                     assert.equal(post.blog.pinterest, 'bacon');
@@ -657,7 +659,7 @@ describe('Wordpress', function () {
                         'WHERE option_name = "pinterest" '
                     , function (err) {
                         if (err) return done(err);
-                        watcher.poll(function (err) {
+                        blog.poll(function (err) {
                             if (err) return done(err);
                             setTimeout(function () {
                                 assert(key && previous && current);
@@ -674,24 +676,24 @@ describe('Wordpress', function () {
                         });
                     });
                 });
-                watcher.on('updated_metadata_key', function (key_, previous_, current_) {
+                blog.on('updated_metadata_key', function (key_, previous_, current_) {
                     key = key_;
                     previous = previous_;
                     current = current_;
                 });
-                watcher.on('updated_metadata', function (metadata) {
+                blog.on('updated_metadata', function (metadata) {
                     updated_metadata = metadata;
                 });
-                watcher.abort();
+                blog.abort();
             });
         });
 
         it('should detect changes to terms', function (done) {
-            getBlogWatcher('bar', {
+            getBlog('bar', {
                 option_keys: [ 'pinterest' ]
-            }, function (err, watcher) {
+            }, function (err, blog) {
                 var updated_terms, updated_metadata;
-                watcher.on('load', function (posts, metadata) {
+                blog.on('load', function (posts, metadata) {
                     assert.deepEqual(Object.keys(metadata.terms), [ '1', '2', '3',
                         '4', '5', '6', '7', '10' ]);
                     db.query(
@@ -699,7 +701,7 @@ describe('Wordpress', function () {
                         'INSERT INTO wp_3_term_taxonomy VALUES (100, 100, "category", "", 6, 0) '
                     , function (err) {
                         if (err) return done(err);
-                        watcher.poll(function (err) {
+                        blog.poll(function (err) {
                             if (err) return done(err);
                             setTimeout(function () {
                                 assert(updated_terms);
@@ -720,23 +722,23 @@ describe('Wordpress', function () {
                         });
                     });
                 });
-                watcher.on('updated_terms', function (terms) {
+                blog.on('updated_terms', function (terms) {
                     updated_terms = terms;
                 });
-                watcher.on('updated_metadata', function (metadata) {
+                blog.on('updated_metadata', function (metadata) {
                     updated_metadata = metadata;
                 });
-                watcher.abort();
+                blog.abort();
             });
         });
 
         it('should pick up modifications to post terms', function (done) {
-            getBlogWatcher('bar', {
+            getBlog('bar', {
                 postmeta_keys: [ 'orientation' ]
               , option_keys: [ 'pinterest' ]
-            }, function (err, watcher) {
+            }, function (err, blog) {
                 var updated_post = null;
-                watcher.on('load', function (posts) {
+                blog.on('load', function (posts) {
                     assert.equal(posts.length, 3);
                     var post = posts[2];
                     assert.equal(post.id, '3');
@@ -750,7 +752,7 @@ describe('Wordpress', function () {
                         'INSERT INTO wp_3_term_relationships VALUES (3,6,0) '
                     , function (err) {
                         if (err) return done(err);
-                        watcher.poll(function (err) {
+                        blog.poll(function (err) {
                             if (err) return done(err);
                             setTimeout(function () {
                                 assert(updated_post);
@@ -763,21 +765,21 @@ describe('Wordpress', function () {
                         });
                     });
                 });
-                watcher.on('updated_post', function (post) {
+                blog.on('updated_post', function (post) {
                     updated_post = post;
                 });
-                watcher.abort();
+                blog.abort();
             });
         });
 
         it('should provide a way to load a single post', function (done) {
-            getBlogWatcher('foo', {
+            getBlog('foo', {
                 postmeta_keys: [ 'orientation' ]
               , option_keys: [ 'pinterest' ]
-            }, function (err, watcher) {
+            }, function (err, blog) {
                 if (err) return done(err);
-                watcher.abort();
-                watcher.loadPost(1, function (err, post) {
+                blog.abort();
+                blog.loadPost(1, function (err, post) {
                     if (err) return done(err);
                     assert.equal(post.id, '1');
                     assert.equal(post.title, 'Bacon ipsum');
@@ -793,8 +795,8 @@ describe('Wordpress', function () {
                     assert.equal(post.blog.pinterest, 'bacon');
                     done();
                 });
-                watcher.on('error', done);
-                watcher.abort();
+                blog.on('error', done);
+                blog.abort();
             });
         });
 
@@ -940,7 +942,7 @@ describe('Wordpress', function () {
     describe('Archive', function () {
 
         it('should generate an archive index for a blog on load', function (done) {
-            getBlog('bar', {
+            getLoader('bar', {
                 postmeta_keys: [ 'orientation' ]
               , option_keys: [ 'pinterest' ]
             }, function (err, foo) {

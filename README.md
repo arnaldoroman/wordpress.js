@@ -30,7 +30,7 @@ multisite.getBlogs(function (err, blogs) {
 Load the blog
 
 ```javascript
-blog.load(function (err, posts, metadata) {
+blog.on('load', function (posts, metadata) {
     //
 });
 ```
@@ -41,21 +41,15 @@ The `metadata` object contains key/value pairs from the options table. The `meta
 
 ## Live updates
 
-The `Watcher` class can be used to detect changes to the blog, such as new posts, updated posts, updated blog metadata, etc.
+The `Blog` instance will poll the database and emit events when something changes.
 
 ```javascript
-var watcher = new wordpress.Watcher(blog);
-
-watcher.on('load', function (posts, metadata) {
-    //...
-});
-
-watcher.on('new_post', function (post) {
+blog.on('new_post', function (post) {
     //...
 });
 ```
 
-The following events are available to listeners
+The following events are available
 
 - **load** - called once when the blog is loaded - receives (posts, metadata)
 - **new_post** - when a new post is published - receives (post)
