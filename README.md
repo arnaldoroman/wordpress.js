@@ -58,7 +58,6 @@ The following events are available
 - **scheduled_post** - when a post has been scheduled - receives (post_id)
 - **updated_terms** - when the category/tag tree changes - receives (terms)
 - **updated_metadata** - when the metadata changes - receives (metadata)
-- **updated_metadata_key** - when a metadata key changes - receives (key, previous, current)
 - **updated_archive** - when the blog archive index changes - receives (archive)
 - **error** - when any sort of error occurs - receives (err)
 

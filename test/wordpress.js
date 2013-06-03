@@ -647,8 +647,7 @@ describe('Wordpress', function () {
             getBlog('bar', {
                 option_keys: [ 'pinterest' ]
             }, function (err, blog) {
-                var key, previous, current
-                  , updated_metadata;
+                var updated_metadata;
                 blog.on('load', function (posts, metadata) {
                     var post = posts[0];
                     assert.equal(metadata.pinterest, 'bacon');
@@ -662,24 +661,21 @@ describe('Wordpress', function () {
                         blog.poll(function (err) {
                             if (err) return done(err);
                             setTimeout(function () {
-                                assert(key && previous && current);
-                                assert.equal(key, 'pinterest');
-                                assert.equal(previous, 'bacon');
-                                assert.equal(current, 'foobar');
-                                assert.equal(metadata.pinterest, 'foobar');
                                 assert(updated_metadata);
                                 assert.equal(updated_metadata.pinterest, 'foobar');
                                 assert.equal(post.blog.pinterest, 'foobar');
                                 assert.equal(metadata.options.id, 3);
-                                done();
+                                updated_metadata = null;
+                                blog.poll(function (err) {
+                                    if (err) return done(err);
+                                    setTimeout(function () {
+                                        assert(!updated_metadata);
+                                        done();
+                                    }, 100);
+                                });
                             }, 100);
                         });
                     });
-                });
-                blog.on('updated_metadata_key', function (key_, previous_, current_) {
-                    key = key_;
-                    previous = previous_;
-                    current = current_;
                 });
                 blog.on('updated_metadata', function (metadata) {
                     updated_metadata = metadata;
@@ -692,7 +688,7 @@ describe('Wordpress', function () {
             getBlog('bar', {
                 option_keys: [ 'pinterest' ]
             }, function (err, blog) {
-                var updated_terms, updated_metadata;
+                var updated_terms;
                 blog.on('load', function (posts, metadata) {
                     assert.deepEqual(Object.keys(metadata.terms), [ '1', '2', '3',
                         '4', '5', '6', '7', '10' ]);
@@ -715,8 +711,6 @@ describe('Wordpress', function () {
                                 assert.equal(metadata.terms['100'].slug, 'foo');
                                 assert.equal(metadata.terms['100'].parent.name, metadata.terms['6'].name);
                                 assert.equal(metadata.terms['6'].children[0], metadata.terms['100']);
-                                assert(updated_metadata);
-                                assert.equal(updated_metadata.terms['100'].name, 'Foo');
                                 done();
                             }, 100);
                         });
@@ -724,9 +718,6 @@ describe('Wordpress', function () {
                 });
                 blog.on('updated_terms', function (terms) {
                     updated_terms = terms;
-                });
-                blog.on('updated_metadata', function (metadata) {
-                    updated_metadata = metadata;
                 });
                 blog.abort();
             });
