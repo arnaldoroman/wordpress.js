@@ -1,4 +1,4 @@
-**Wordpress.js** is an in-memory front-end to wordpress.
+**Wordpress.js** is an in-memory (read only) front-end to wordpress.
 
 ## Usage
 
