@@ -351,7 +351,7 @@ describe('Wordpress', function () {
                     assert.equal(typeof metadata.category_slugs, 'object');
                     assert.equal(metadata.categories.length, 8);
                     assert.equal(metadata.tags.length, 3);
-                    assert.equal(metadata.categories[0].slug, 'uncategorized');
+                    assert.equal(metadata.categories[0].slug, 'accessories');
                     assert.equal(metadata.tags[0].slug, 'radical');
                     assert.equal(metadata.category_slugs['uncategorized'].name, 'Uncategorized');
                     done();
