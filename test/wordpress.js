@@ -347,13 +347,13 @@ describe('Wordpress', function () {
                     assert(metadata.terms['7'] instanceof wordpress.Tag);
                     assert(Array.isArray(metadata.categories));
                     assert(Array.isArray(metadata.tags));
-                    assert.equal(Object.keys(metadata.term_slugs).length, 11);
-                    assert.equal(typeof metadata.term_slugs, 'object');
+                    assert.equal(Object.keys(metadata.category_slugs).length, 8);
+                    assert.equal(typeof metadata.category_slugs, 'object');
                     assert.equal(metadata.categories.length, 8);
                     assert.equal(metadata.tags.length, 3);
                     assert.equal(metadata.categories[0].slug, 'uncategorized');
                     assert.equal(metadata.tags[0].slug, 'radical');
-                    assert.equal(metadata.term_slugs['uncategorized'].name, 'Uncategorized');
+                    assert.equal(metadata.category_slugs['uncategorized'].name, 'Uncategorized');
                     done();
                 });
             });
@@ -836,14 +836,14 @@ describe('Wordpress', function () {
             };
             var metadata = new wordpress.Metadata(null, terms);
             assert.deepEqual(metadata.terms, terms);
-            assert.deepEqual(Object.keys(metadata.term_slugs), [ 'foo', 'bar', 'qux' ]);
+            assert.deepEqual(Object.keys(metadata.category_slugs), [ 'foo', 'bar', 'qux' ]);
             assert(metadata.syncTerms({
                 '1': { id: '1', name: 'ooF', slug: 'oof' }
               , '2': bar
               , '3': baz
             }));
             assert.deepEqual(Object.keys(metadata.terms), [ '1', '2', '3' ]);
-            assert.deepEqual(Object.keys(metadata.term_slugs), [ 'bar', 'oof', 'baz' ]);
+            assert.deepEqual(Object.keys(metadata.category_slugs), [ 'bar', 'oof', 'baz' ]);
             assert.equal(metadata.categories.length, 3);
             assert.equal(metadata.terms['1'].name, 'ooF');
             assert.equal(metadata.terms['1'].slug, 'oof');
@@ -925,7 +925,7 @@ describe('Wordpress', function () {
             assert(metadata.syncTerms({}));
             assert.equal(metadata.categories.length, 0);
             assert.equal(metadata.tags.length, 0);
-            assert.equal(Object.keys(metadata.term_slugs).length, 0);
+            assert.equal(Object.keys(metadata.category_slugs).length, 0);
         });
 
     });
