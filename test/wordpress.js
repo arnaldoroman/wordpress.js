@@ -400,10 +400,12 @@ describe('Wordpress', function () {
         });
 
         it('should pick up new posts', function (done) {
+            var hours = new Date().getTimezoneOffset() / 60;
             db.query(
                 'UPDATE wp_3_posts ' +
                 'SET post_status = "draft", ' +
-                '    post_modified_gmt = NOW() ' +
+                '    post_modified_gmt = DATE_SUB(NOW(), ' +
+                '    INTERVAL ' + hours + ' HOUR) ' +
                 'WHERE ID = 3'
             , function (err) {
                 if (err) return done(err);
@@ -417,7 +419,8 @@ describe('Wordpress', function () {
                         db.query(
                             'UPDATE wp_3_posts ' +
                             'SET post_status = "publish", ' +
-                            '    post_modified_gmt = NOW() ' +
+                            '    post_modified_gmt = DATE_SUB(NOW(), ' +
+                            '    INTERVAL ' + hours + ' HOUR) ' +
                             'WHERE ID = 3'
                         , function (err) {
                             if (err) return done(err);
@@ -442,10 +445,12 @@ describe('Wordpress', function () {
         });
 
         it('should poll for changes periodically', function (done) {
+            var hours = new Date().getTimezoneOffset() / 60;
             db.query(
                 'UPDATE wp_3_posts ' +
                 'SET post_status = "draft", ' +
-                '    post_modified_gmt = NOW() ' +
+                '    post_modified_gmt = DATE_SUB(NOW(), ' +
+                '    INTERVAL ' + hours + ' HOUR) ' +
                 'WHERE ID = 3'
             , function (err) {
                 if (err) return done(err);
@@ -460,7 +465,8 @@ describe('Wordpress', function () {
                         db.query(
                             'UPDATE wp_3_posts ' +
                             'SET post_status = "publish", ' +
-                            '    post_modified_gmt = NOW() ' +
+                            '    post_modified_gmt = DATE_SUB(NOW(), ' +
+                            '    INTERVAL ' + hours + ' HOUR) ' +
                             'WHERE ID = 3'
                         , function (err) {
                             if (err) return done(err);
@@ -483,6 +489,7 @@ describe('Wordpress', function () {
         });
 
         it('should pick up updated posts', function (done) {
+            var hours = new Date().getTimezoneOffset() / 60;
             getBlog('bar', {
                 postmeta_keys: [ 'orientation' ]
               , option_keys: [ 'pinterest' ]
@@ -493,7 +500,8 @@ describe('Wordpress', function () {
                     db.query(
                         'UPDATE wp_3_posts ' +
                         'SET post_content = "foo", ' +
-                        '    post_modified_gmt = NOW() ' +
+                        '    post_modified_gmt = DATE_SUB(NOW(), ' +
+                        '    INTERVAL ' + hours + ' HOUR) ' +
                         'WHERE ID = 3'
                     , function (err) {
                         if (err) return done(err);
@@ -724,6 +732,7 @@ describe('Wordpress', function () {
         });
 
         it('should pick up modifications to post terms', function (done) {
+            var hours = new Date().getTimezoneOffset() / 60;
             getBlog('bar', {
                 postmeta_keys: [ 'orientation' ]
               , option_keys: [ 'pinterest' ]
@@ -738,7 +747,8 @@ describe('Wordpress', function () {
                     }), [ 'Advertorial', 'Travel' ]);
                     db.query(
                         'UPDATE wp_3_posts ' +
-                        'SET post_modified_gmt = NOW() ' +
+                        'SET post_modified_gmt = DATE_SUB(NOW(), ' +
+                        '    INTERVAL ' + hours + ' HOUR) ' +
                         'WHERE ID = 3; ' +
                         'INSERT INTO wp_3_term_relationships VALUES (3,6,0) '
                     , function (err) {
