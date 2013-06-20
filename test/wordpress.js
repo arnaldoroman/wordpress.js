@@ -359,6 +359,28 @@ describe('Wordpress', function () {
             });
         });
 
+        it('should load gallery metadata', function (done) {
+            getLoader('bar', function (err, foo) {
+                if (err) return done(err);
+                foo.loadPosts({}, function (err, posts) {
+                    if (err) return done(err);
+                    assert(Array.isArray(posts));
+                    posts.forEach(function (post) {
+                        if (post.gallery) {
+                            assert.equal(post.id, 3);
+                        }
+                    });
+                    assert.deepEqual(posts[2].gallery, {
+                        '100': { url: 'http://example.com/foo.jpg', caption: 'caption1' }
+                      , '101': { url: 'http://example.com/bar.jpg', caption: 'caption2' }
+                      , '102': { url: 'http://example.com/baz.jpg', caption: 'caption3' }
+                      , '103': { url: 'http://example.com/qux.jpg', caption: 'caption4' }
+                    });
+                    done();
+                });
+            });
+        });
+
     });
 
     describe('blog', function () {
