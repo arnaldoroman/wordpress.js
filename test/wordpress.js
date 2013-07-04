@@ -374,7 +374,7 @@ describe('Wordpress', function () {
                         '100': { url: 'http://example.com/foo.jpg', caption: 'caption1' }
                       , '101': { url: 'http://example.com/bar.jpg', caption: 'caption2' }
                       , '102': { url: 'http://example.com/baz.jpg', caption: 'caption3' }
-                      , '103': { url: 'http://example.com/qux.jpg', caption: 'caption4' }
+                      , '103': { url: 'http://example.com/qux.jpg', caption: 'caption4', size: '880x587' }
                     });
                     done();
                 });

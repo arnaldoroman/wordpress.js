@@ -113,7 +113,7 @@ CREATE TABLE IF NOT EXISTS `wp_3_postmeta` (
   KEY `meta_key` (`meta_key`)
 );
 
-REPLACE INTO `wp_3_postmeta` VALUES (1,1,'frontpage-post-type','Featured'),(2,1,'_thumbnail_id','100001'),(3,1,'orientation','top'),(4,1,'original_title','Dolor sit amet meatball'),(7,2,'frontpage-post-type','Portrait'),(8,2,'_thumbnail_id','100000'),(9,2,'orientation',''),(10,2,'original_title','Tongue brewsaola'),(13,3,'frontpage-post-type','Video'),(14,3,'_thumbnail_id','100001'),(15,3,'orientation','top'),(16,3,'original_title','Flank hamburger');
+REPLACE INTO `wp_3_postmeta` VALUES (1,1,'frontpage-post-type','Featured'),(2,1,'_thumbnail_id','100001'),(3,1,'orientation','top'),(4,1,'original_title','Dolor sit amet meatball'),(7,2,'frontpage-post-type','Portrait'),(8,2,'_thumbnail_id','100000'),(9,2,'orientation',''),(10,2,'original_title','Tongue brewsaola'),(13,3,'frontpage-post-type','Video'),(14,3,'_thumbnail_id','100001'),(15,3,'orientation','top'),(16,3,'original_title','Flank hamburger'),(17,103,'_wp_attachment_metadata','a:2:{s:5:\"width\";s:3:\"880\";s:7:\"height\";s:3:\"587\";}');
 
 CREATE TABLE IF NOT EXISTS `wp_3_posts` (
   `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
