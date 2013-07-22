@@ -619,14 +619,13 @@ describe('Wordpress', function () {
 
         it('should pick up scheduled posts after initial load that are later published', function (done) {
             getBlog('bar', {
-                postmeta_keys: [ 'orientation' ]
+                postmeta_keys: [ 'orientation', 'foobar' ]
               , option_keys: [ 'pinterest' ]
             }, function (err, blog) {
                 var removed_post = null
                   , new_post = null
                   , scheduled_post = null;
-                blog.on('load', function (posts) {
-                    assert.equal(posts.length, 3);
+                blog.on('load', function () {
                     db.query(
                         'UPDATE wp_3_posts ' +
                         'SET post_status = "future", ' +
@@ -640,20 +639,24 @@ describe('Wordpress', function () {
                                 assert(removed_post);
                                 assert.equal(removed_post.id, '3');
                                 assert.equal(scheduled_post, '3');
-                                db.query(
-                                    'UPDATE wp_3_posts ' +
-                                    'SET post_status = "publish" ' +
-                                    'WHERE ID = 3'
-                                , function (err) {
+                                blog.setPostOption(3, 'foobar', 'baz', function (err) {
                                     if (err) return done(err);
-                                    blog.poll(function (err) {
+                                    db.query(
+                                        'UPDATE wp_3_posts ' +
+                                        'SET post_status = "publish" ' +
+                                        'WHERE ID = 3'
+                                    , function (err) {
                                         if (err) return done(err);
-                                        setTimeout(function () {
-                                            assert(new_post);
-                                            assert.equal(new_post.id, '3');
-                                            assert.equal(new_post.orientation, 'top');
-                                            done();
-                                        }, 100);
+                                        blog.poll(function (err) {
+                                            if (err) return done(err);
+                                            setTimeout(function () {
+                                                assert(new_post);
+                                                assert.equal(new_post.id, '3');
+                                                assert.equal(new_post.orientation, 'top');
+                                                assert.equal(new_post.foobar, 'baz');
+                                                done();
+                                            }, 100);
+                                        });
                                     });
                                 });
                             }, 100);
@@ -682,11 +685,7 @@ describe('Wordpress', function () {
                     var post = posts[0];
                     assert.equal(metadata.pinterest, 'bacon');
                     assert.equal(post.blog.pinterest, 'bacon');
-                    db.query(
-                        'UPDATE wp_3_options ' +
-                        'SET option_value = "foobar" ' +
-                        'WHERE option_name = "pinterest" '
-                    , function (err) {
+                    blog.setOption('pinterest', 'foobar', function (err) {
                         if (err) return done(err);
                         blog.poll(function (err) {
                             if (err) return done(err);
