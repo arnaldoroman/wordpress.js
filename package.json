@@ -16,7 +16,7 @@
     "node": ">= 0.10.0"
   },
   "dependencies": {
-    "mariasql": "git+ssh://git@github.com/mscdex/node-mariasql.git#d6772e7a"
+    "mariasql": ">= 0.1.19"
   },
   "devDependencies": {
     "mocha": "*"
