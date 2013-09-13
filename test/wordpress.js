@@ -178,7 +178,7 @@ describe('Wordpress', function () {
                         assert(post instanceof wordpress.Post);
                         assert(post.date instanceof Date);
                         assert(post.modified instanceof Date);
-                        assert.equal(Object.keys(post).length, 9);
+                        assert.equal(Object.keys(post).length, 10);
                         assert.equal(post.blog.foo, 'bar');
                     });
                     assert(posts[0].date > posts[1].date && posts[1].date > posts[2].date);
@@ -819,6 +819,17 @@ describe('Wordpress', function () {
                 });
                 blog.on('error', done);
                 blog.abort();
+            });
+        });
+
+        it('should load the thumbnail crop', function (done) {
+            getBlog('foo', function (err, blog) {
+                if (err) return done(err);
+                blog.loadPost(3, function (err, post) {
+                    if (err) return done(err);
+                    assert.equal(post.thumbnail_crop, 'foobar');
+                    done();
+                });
             });
         });
 

@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS `wp_2_postmeta` (
   KEY `meta_key` (`meta_key`)
 );
 
-REPLACE INTO `wp_2_postmeta` VALUES (1,1,'frontpage-post-type','Video'),(2,1,'_thumbnail_id','100001'),(3,1,'orientation','top'),(4,1,'original_title','Bacon ipsum'),(7,2,'frontpage-post-type','Quick'),(8,2,'_thumbnail_id','100001'),(9,2,'orientation','top'),(10,2,'original_title','Ham andouille speck'),(13,3,'frontpage-post-type','Video'),(14,3,'_thumbnail_id','100001'),(15,3,'orientation','top'),(16,3,'original_title','Dolor sit amet meatball');
+REPLACE INTO `wp_2_postmeta` VALUES (1,1,'frontpage-post-type','Video'),(2,1,'_thumbnail_id','100001'),(3,1,'orientation','top'),(4,1,'original_title','Bacon ipsum'),(7,2,'frontpage-post-type','Quick'),(8,2,'_thumbnail_id','100001'),(9,2,'orientation','top'),(10,2,'original_title','Ham andouille speck'),(13,3,'frontpage-post-type','Video'),(14,3,'_thumbnail_id','100001'),(15,3,'orientation','top'),(16,3,'original_title','Dolor sit amet meatball'),(17,100001,'crop','foobar');
 
 CREATE TABLE IF NOT EXISTS `wp_2_posts` (
   `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
