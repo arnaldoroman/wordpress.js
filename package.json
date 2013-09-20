@@ -19,6 +19,8 @@
     "mariasql": ">= 0.1.19"
   },
   "devDependencies": {
-    "mocha": "*"
+    "mocha": "latest",
+    "istanbul": "latest",
+    "jshint": "latest"
   }
 }

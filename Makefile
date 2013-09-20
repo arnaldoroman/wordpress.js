@@ -14,8 +14,8 @@ dependencies:
 
 deps: dependencies
 
-lint:
-	@jshint lib test
+lint: check-deps
+	@./node_modules/.bin/jshint -c ./.jshintrc lib test
 
 check: check-config check-deps
 	@./node_modules/mocha/bin/mocha \
@@ -36,16 +36,14 @@ check-deps:
 		npm install -d; \
 	fi
 
-coverage: lib-cov
-	@JS_COV=1 ./node_modules/mocha/bin/mocha \
-		--reporter html-cov > coverage.html
-	@rm -rf *-cov
-	@open coverage.html
+coverage: check-deps
+	@./node_modules/.bin/istanbul cover \
+		./node_modules/.bin/_mocha -- -R spec
 
-lib-cov:
-	@which jscoverage &> /dev/null || \
-		(echo "jscoverage is required - see the README" && exit 1);
-	@rm -rf lib-cov
-	@jscoverage lib lib-cov
+coverage-html: coverage
+	@open coverage/lcov-report/index.html
 
-.PHONY: check dependencies lint
+clean:
+	@rm -rf coverage
+
+.PHONY: check dependencies lint coverage
