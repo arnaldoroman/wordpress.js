@@ -1,7 +1,5 @@
-var lib_dir = process.env.JS_COV ? '../lib-cov/': '../lib/';
-
 var assert = require('assert')
-  , wordpress = require(lib_dir + 'wordpress')
+  , wordpress = require('../lib/wordpress')
   , inherits = require('util').inherits
   , fs = require('fs');
 

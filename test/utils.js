@@ -1,7 +1,5 @@
-var lib_dir = process.env.JS_COV ? '../lib-cov/': '../lib/';
-
 var assert = require('assert')
-  , utils = require(lib_dir + 'wordpress');
+  , utils = require('../lib/wordpress');
 
 describe('Utilities', function () {
 
