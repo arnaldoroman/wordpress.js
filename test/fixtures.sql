@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS `wp_2_term_relationships` (
   KEY `term_taxonomy_id` (`term_taxonomy_id`)
 );
 
-REPLACE INTO `wp_2_term_relationships` VALUES (1,2,0),(1,3,0),(1,4,0),(2,3,0),(2,6,0),(2,7,0),(2,8,0),(3,7,0),(3,10,0),(3,11,0);
+REPLACE INTO `wp_2_term_relationships` VALUES (1,2,0),(1,3,0),(1,4,0),(2,3,0),(2,6,0),(2,7,0),(2,8,0),(3,7,0),(3,10,0),(3,11,0),(3,15,0);
 
 CREATE TABLE IF NOT EXISTS `wp_2_term_taxonomy` (
   `term_taxonomy_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -77,7 +77,7 @@ CREATE TABLE IF NOT EXISTS `wp_2_term_taxonomy` (
   KEY `taxonomy` (`taxonomy`)
 );
 
-REPLACE INTO `wp_2_term_taxonomy` VALUES (1,1,'category','',0,0),(2,2,'category','',0,0),(3,3,'category','',0,0),(4,4,'post_tag','',0,0),(6,6,'category','',0,0),(7,7,'post_tag','',0,0),(8,8,'post_tag','',0,0),(10,10,'category','',0,0),(11,11,'category','',0,0),(100,12,'category','',3,0),(101,13,'category','',12,0);
+REPLACE INTO `wp_2_term_taxonomy` VALUES (1,1,'category','',0,0),(2,2,'category','',0,0),(3,3,'category','',0,0),(4,4,'post_tag','',0,0),(6,6,'category','',0,0),(7,7,'post_tag','',0,0),(8,8,'post_tag','',0,0),(10,10,'category','',0,0),(11,11,'category','',0,0),(100,12,'category','',3,0),(101,13,'category','',12,0),(102,14,'photographer','',0,0),(102,15,'photographer','',14,0);
 
 CREATE TABLE IF NOT EXISTS `wp_2_terms` (
   `term_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -89,7 +89,7 @@ CREATE TABLE IF NOT EXISTS `wp_2_terms` (
   KEY `name` (`name`)
 );
 
-REPLACE INTO `wp_2_terms` VALUES (1,'Uncategorized','uncategorized',0),(2,'Personal','personal',0),(3,'Shopping','shopping',0),(4,'Radical','radical',0),(6,'Photography','photography',0),(7,'Awesome','awesome',0),(8,'Yolo','yolo',0),(10,'Accessories','accessories',0),(11,'Inspiration','inspiration',0),(12,'Subcategory','subcategory',0),(13,'Subsubcategory','subsubcategory',0);
+REPLACE INTO `wp_2_terms` VALUES (1,'Uncategorized','uncategorized',0),(2,'Personal','personal',0),(3,'Shopping','shopping',0),(4,'Radical','radical',0),(6,'Photography','photography',0),(7,'Awesome','awesome',0),(8,'Yolo','yolo',0),(10,'Accessories','accessories',0),(11,'Inspiration','inspiration',0),(12,'Subcategory','subcategory',0),(13,'Subsubcategory','subsubcategory',0),(14,'Foo McBar','foo-mcbar',0),(15,'Baz Foo','baz-foo',0);
 
 CREATE TABLE IF NOT EXISTS `wp_3_options` (
   `option_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,

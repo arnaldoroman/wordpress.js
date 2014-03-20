@@ -144,7 +144,7 @@ describe('Wordpress', function () {
                     assert.deepEqual(relationships, {
                         '1': [ '2', '3', '4' ]
                       , '2': [ '3', '6', '7', '8' ]
-                      , '3': [ '7', '10', '11' ]
+                      , '3': [ '7', '10', '11', '14', '15' ]
                     });
                     done();
                 });
@@ -345,11 +345,13 @@ describe('Wordpress', function () {
                     assert(metadata.terms['7'] instanceof wordpress.Tag);
                     assert(Array.isArray(metadata.categories));
                     assert(Array.isArray(metadata.tags));
-                    assert.equal(Object.keys(metadata.category_slugs).length, 8);
+                    assert.equal(Object.keys(metadata.category_slugs).length, 9);
                     assert.equal(typeof metadata.category_slugs, 'object');
-                    assert.equal(metadata.categories.length, 8);
+                    assert.equal(metadata.categories.length, 9);
                     assert.equal(metadata.tags.length, 3);
                     assert.equal(metadata.categories[0].slug, 'accessories');
+                    assert.equal(metadata.categories[0].taxonomy, 'category');
+                    assert.equal(metadata.category_slugs['baz-foo'].taxonomy, 'photographer');
                     assert.equal(metadata.tags[0].slug, 'radical');
                     assert.equal(metadata.category_slugs['uncategorized'].name, 'Uncategorized');
                     done();
