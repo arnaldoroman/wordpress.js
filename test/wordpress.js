@@ -176,7 +176,7 @@ describe('Wordpress', function () {
                         assert(post instanceof wordpress.Post);
                         assert(post.date instanceof Date);
                         assert(post.modified instanceof Date);
-                        assert.equal(Object.keys(post).length, 10);
+                        assert.equal(Object.keys(post).length, 11);
                         assert.equal(post.blog.foo, 'bar');
                     });
                     assert(posts[0].date > posts[1].date && posts[1].date > posts[2].date);
@@ -192,6 +192,7 @@ describe('Wordpress', function () {
                     assert.equal(post.slug, '/2009/08/ham-andouille-speck');
                     assert.equal(post.title, 'Ham andouille speck');
                     assert.equal(post.image, '/foo/files/2011/01/2.jpg');
+                    assert.equal(post.thumbnail_size, '880x587');
                     done();
                 });
             });
