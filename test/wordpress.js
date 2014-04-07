@@ -355,6 +355,7 @@ describe('Wordpress', function () {
                     assert.equal(metadata.category_slugs['baz-foo'].taxonomy, 'photographer');
                     assert.equal(metadata.tags[0].slug, 'radical');
                     assert.equal(metadata.category_slugs['uncategorized'].name, 'Uncategorized');
+                    assert.deepEqual(metadata.taxonomies, ['photographer']);
                     done();
                 });
             });
