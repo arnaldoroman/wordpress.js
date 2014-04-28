@@ -176,7 +176,7 @@ describe('Wordpress', function () {
                         assert(post instanceof wordpress.Post);
                         assert(post.date instanceof Date);
                         assert(post.modified instanceof Date);
-                        assert.equal(Object.keys(post).length, 11);
+                        assert.equal(Object.keys(post).length, 12);
                         assert.equal(post.blog.foo, 'bar');
                     });
                     assert(posts[0].date > posts[1].date && posts[1].date > posts[2].date);
@@ -332,6 +332,7 @@ describe('Wordpress', function () {
                     assert.equal(post.id, '1');
                     assert.equal(post.title, 'Bacon ipsum');
                     assert.equal(post.orientation, 'top');
+                    assert.equal(post.author.name, 'Foo');
                     assert(Array.isArray(post.tags));
                     assert(Array.isArray(post.categories));
                     assert.equal(post.tags.length, 1);
@@ -356,6 +357,10 @@ describe('Wordpress', function () {
                     assert.equal(metadata.tags[0].slug, 'radical');
                     assert.equal(metadata.category_slugs['uncategorized'].name, 'Uncategorized');
                     assert.deepEqual(metadata.taxonomies, ['photographer']);
+                    assert.deepEqual(metadata.users, {
+                        1: { id: '1', login: 'foo', email: 'foo@example.com', name: 'Foo' }
+                      , 2: { id: '2', login: 'bar', email: 'bar@example.com', name: 'Bar' }
+                    });
                     done();
                 });
             });
@@ -443,6 +448,7 @@ describe('Wordpress', function () {
                         db.query(
                             'UPDATE wp_3_posts ' +
                             'SET post_status = "publish", ' +
+                            '    post_author = "2", ' +
                             '    post_modified_gmt = DATE_SUB(NOW(), ' +
                             '    INTERVAL ' + hours + ' HOUR) ' +
                             'WHERE ID = 3'
@@ -454,7 +460,7 @@ describe('Wordpress', function () {
                                     assert(new_post);
                                     assert.equal(new_post.id, '3');
                                     assert.equal(new_post.orientation, 'top');
-
+                                    assert.equal(new_post.author.name, 'Bar');
                                     done();
                                 }, 100);
                             });
@@ -817,6 +823,7 @@ describe('Wordpress', function () {
                     assert(Array.isArray(post.categories[1].children));
                     assert.equal(post.categories[1].children.length, 1);
                     assert.equal(post.blog.pinterest, 'bacon');
+                    assert.equal(post.author.name, 'Foo');
                     done();
                 });
                 blog.on('error', done);
