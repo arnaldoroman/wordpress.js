@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS `wp_2_term_relationships` (
   KEY `term_taxonomy_id` (`term_taxonomy_id`)
 );
 
-REPLACE INTO `wp_2_term_relationships` VALUES (1,2,0),(1,3,0),(1,4,0),(2,3,0),(2,6,0),(2,7,0),(2,8,0),(3,7,0),(3,10,0),(3,11,0),(3,15,0);
+REPLACE INTO `wp_2_term_relationships` VALUES (1,2,0),(1,3,0),(1,4,0),(2,3,0),(2,6,0),(2,7,0),(2,8,0),(3,7,0),(3,10,0),(3,11,0),(3,14,0), (3,15,0);
 
 CREATE TABLE IF NOT EXISTS `wp_2_term_taxonomy` (
   `term_taxonomy_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
