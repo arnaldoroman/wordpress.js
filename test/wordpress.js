@@ -121,6 +121,7 @@ describe('Wordpress', function () {
                     assert.equal(tag.slug, 'awesome');
                     assert.equal(category.name, 'Shopping');
                     assert.equal(category.slug, 'shopping');
+                    assert.equal(category.description, 'Bury me with my money');
                     assert(Array.isArray(category.children));
                     assert.equal(category.children[0], subcategory);
                     assert.equal(subcategory.name, 'Subcategory');
@@ -339,6 +340,7 @@ describe('Wordpress', function () {
                     assert.equal(post.categories.length, 2);
                     assert.equal(post.tags[0].name, 'Radical');
                     assert.equal(post.categories[1].name, 'Shopping');
+                    assert.equal(post.categories[1].description, 'Bury me with my money');
                     assert(Array.isArray(post.categories[1].children));
                     assert.equal(post.categories[1].children.length, 1);
                     assert(typeof metadata.terms, 'object');
@@ -1087,4 +1089,3 @@ describe('Wordpress', function () {
     });
 
 });
-

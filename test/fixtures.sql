@@ -77,7 +77,7 @@ CREATE TABLE IF NOT EXISTS `wp_2_term_taxonomy` (
   KEY `taxonomy` (`taxonomy`)
 );
 
-REPLACE INTO `wp_2_term_taxonomy` VALUES (1,1,'category','',0,0),(2,2,'category','',0,0),(3,3,'category','',0,0),(4,4,'post_tag','',0,0),(6,6,'category','',0,0),(7,7,'post_tag','',0,0),(8,8,'post_tag','',0,0),(10,10,'category','',0,0),(11,11,'category','',0,0),(100,12,'category','',3,0),(101,13,'category','',12,0),(102,14,'photographer','',0,0),(102,15,'photographer','',14,0);
+REPLACE INTO `wp_2_term_taxonomy` VALUES (1,1,'category','',0,0),(2,2,'category','',0,0),(3,3,'category','Bury me with my money',0,0),(4,4,'post_tag','',0,0),(6,6,'category','',0,0),(7,7,'post_tag','',0,0),(8,8,'post_tag','',0,0),(10,10,'category','',0,0),(11,11,'category','',0,0),(100,12,'category','',3,0),(101,13,'category','',12,0),(102,14,'photographer','',0,0),(102,15,'photographer','',14,0);
 
 CREATE TABLE IF NOT EXISTS `wp_2_terms` (
   `term_id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
