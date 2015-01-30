@@ -62,6 +62,19 @@ describe('Wordpress', function () {
             });
         });
 
+        it('should avoid deleted blogs', function (done) {
+            var multisite = new wordpress.Multisite(db);
+            multisite.getBlogs(function (err, blogs) {
+                if (err) return done(err);
+                var found = false;
+                blogs.forEach(function(blog){
+                    if (blog.options.name === 'baz') found = true;
+                });
+                assert.equal(false, found);
+                done();
+            });
+        });
+
         it('should accept and use a database name', function (done) {
             var multisite = new wordpress.Multisite(db, { database: config.db });
             multisite.getBlogs(function (err, blogs) {

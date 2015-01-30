@@ -208,7 +208,7 @@ CREATE TABLE IF NOT EXISTS `wp_blogs` (
   KEY `lang_id` (`lang_id`)
 );
 
-REPLACE INTO `wp_blogs` VALUES (1,1,'example.com','/','2012-03-14 22:52:22','0000-00-00 00:00:00',1,'0',0,0,0,0),(2,1,'example.com','/foo/','0000-00-00 00:00:00','0000-00-00 00:00:00',1,'0',0,0,0,0),(3,1,'example.com','/bar/','0000-00-00 00:00:00','0000-00-00 00:00:00',1,'0',0,0,0,0);
+REPLACE INTO `wp_blogs` VALUES (1,1,'example.com','/','2012-03-14 22:52:22','0000-00-00 00:00:00',1,'0',0,0,0,0),(2,1,'example.com','/foo/','0000-00-00 00:00:00','0000-00-00 00:00:00',1,'0',0,0,0,0),(3,1,'example.com','/bar/','0000-00-00 00:00:00','0000-00-00 00:00:00',1,'0',0,0,0,0),(4,1,'example.com','/baz/','0000-00-00 00:00:00','0000-00-00 00:00:00',1,'0',0,0,1,0);
 
 CREATE TABLE IF NOT EXISTS `wp_users` (
   `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
