@@ -1,0 +1,18 @@
+env: DEBIAN_FRONTEND=noninteractive
+language: node_js
+node_js:
+  - "0.10"
+
+# Jump hoops to get MariaDB Installed
+# travis people: looking forward to having MariaDB in there by default
+before_install:
+  - sudo service mysql stop
+  - sudo apt-get install -qq python-software-properties
+  - sudo apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xcbcb082a1bb943db
+  - sudo add-apt-repository 'deb http://ftp.osuosl.org/pub/mariadb/repo/5.5/ubuntu precise main'
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq -y -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold" mariadb-server
+
+before_script:
+  - mysql -u root -e 'create database wordpressjs;'
+  - cp test_config.default.js test_config.js

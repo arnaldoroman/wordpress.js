@@ -1,5 +1,7 @@
 **Wordpress.js** is an in-memory (read-only) front-end to Wordpress.
 
+[![Build Status](https://travis-ci.org/sydneystockholm/wordpress.js.svg)](https://travis-ci.org/sydneystockholm/wordpress.js)
+
 ## Usage
 
 Create a connection to the database. The library uses the non-blocking [mariasql](https://github.com/mscdex/node-mariasql) driver.
