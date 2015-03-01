@@ -522,7 +522,7 @@ describe('Wordpress', function () {
                                 assert.equal(new_post.orientation, 'top');
                                 blog.abort();
                                 done();
-                            }, 100);
+                            }, 300);
                         });
                     });
                     blog.on('new_post', function (post) {
@@ -558,7 +558,7 @@ describe('Wordpress', function () {
                                 assert.equal(updated_post.content, 'foo');
                                 assert.equal(updated_post.orientation, 'top');
                                 done();
-                            }, 100);
+                            }, 300);
                         });
                     });
                 });
@@ -590,7 +590,7 @@ describe('Wordpress', function () {
                                 assert(removed_post);
                                 assert.equal(removed_post.id, '3');
                                 done();
-                            }, 100);
+                            }, 300);
                         });
                     });
                 });
@@ -628,7 +628,7 @@ describe('Wordpress', function () {
                                     assert.equal(new_post.id, '3');
                                     assert.equal(new_post.orientation, 'top');
                                     done();
-                                }, 100);
+                                }, 300);
                             });
                         });
                     });
@@ -678,11 +678,11 @@ describe('Wordpress', function () {
                                                 assert.equal(new_post.orientation, 'top');
                                                 assert.equal(new_post.foobar, 'baz');
                                                 done();
-                                            }, 100);
+                                            }, 300);
                                         });
                                     });
                                 });
-                            }, 100);
+                            }, 300);
                         });
                     });
                 });
@@ -764,7 +764,7 @@ describe('Wordpress', function () {
                                 assert.equal(metadata.terms['100'].parent.name, metadata.terms['6'].name);
                                 assert.equal(metadata.terms['6'].children[0], metadata.terms['100']);
                                 done();
-                            }, 100);
+                            }, 300);
                         });
                     });
                 });
@@ -806,7 +806,7 @@ describe('Wordpress', function () {
                                     return cat.name;
                                 }), [ 'Advertorial', 'News', 'Travel' ]);
                                 done();
-                            }, 100);
+                            }, 300);
                         });
                     });
                 });
